@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add a new property listing">
+    <title>Add Property - PropertyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-home"></i>
+                <h1>PropertyHub</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/#properties">Properties</a></li>
+                <li><a href="/add-property.html" class="active">Add Property</a></li>
+                <li><a href="/#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Add Property Section -->
+    <section class="add-property-section">
+        <div class="container">
+            <div class="page-header">
+                <h1>List Your Property</h1>
+                <p>Fill out the form below to add your property to our listings</p>
+            </div>
+
+            <div class="form-container">
+                <form id="addPropertyForm" class="property-form">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="title">Property Title *</label>
+                            <input type="text" id="title" name="Title" required 
+                                   placeholder="e.g., Beautiful Family Home in Suburban Area">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="propertyType">Property Type *</label>
+                                <select id="propertyType" name="PropertyType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="House">House</option>
+                                    <option value="Apartment">Apartment</option>
+                                    <option value="Condo">Condo</option>
+                                    <option value="Townhouse">Townhouse</option>
+                                    <option value="Villa">Villa</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="price">Price (USD) *</label>
+                                <input type="number" id="price" name="Price" required 
+                                       placeholder="450000" min="0" step="1000">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Full Address *</label>
+                            <input type="text" id="location" name="Location" required 
+                                   placeholder="123 Main St, City, State, ZIP">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">Status *</label>
+                            <select id="status" name="Status" required>
+                                <option value="Available">Available</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Sold">Sold</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Property Details -->
+                    <div class="form-section">
+                        <h2><i class="fas fa-ruler-combined"></i> Property Details</h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bedrooms">Bedrooms</label>
+                                <input type="number" id="bedrooms" name="Bedrooms" 
+                                       placeholder="4" min="0" max="20">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bathrooms">Bathrooms</label>
+                                <input type="number" id="bathrooms" name="Bathrooms" 
+                                       placeholder="3" min="0" max="20" step="0.5">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="squareFeet">Square Feet</label>
+                                <input type="number" id="squareFeet" name="SquareFeet" 
+                                       placeholder="2500" min="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="yearBuilt">Year Built</label>
+                                <input type="number" id="yearBuilt" name="YearBuilt" 
+                                       placeholder="2020" min="1800" max="2030">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description & Media -->
+                    <div class="form-section">
+                        <h2><i class="fas fa-align-left"></i> Description & Media</h2>
+                        
+                        <div class="form-group">
+                            <label for="description">Property Description *</label>
+                            <textarea id="description" name="Description" rows="6" required
+                                      placeholder="Describe your property, highlight key features, nearby amenities, etc."></textarea>
+                            <small>Provide a detailed description to attract potential buyers</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imageUrl">Image URL</label>
+                            <input type="url" id="imageUrl" name="ImageURL" 
+                                   placeholder="https://example.com/property-image.jpg">
+                            <small>Provide a direct link to an image of your property</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="amenities">Amenities</label>
+                            <textarea id="amenities" name="Amenities" rows="3"
+                                      placeholder="Pool, Gym, Parking, Garden, Security System"></textarea>
+                            <small>List amenities separated by commas</small>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus-circle"></i> Add Property
+                        </button>
+                    </div>
+
+                    <!-- Form Messages -->
+                    <div id="formMessage" class="form-message" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>PropertyHub</h3>
+                    <p>Your trusted partner in finding the perfect property.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#properties">Properties</a></li>
+                        <li><a href="/add-property.html">Add Property</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 PropertyHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/add-property.js"></script>
+</body>
+</html>
