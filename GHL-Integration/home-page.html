@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Listings - UTAH REIA</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background: #1f2937;
+      color: white;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      padding: 15px 0;
+      color: white;
+      text-decoration: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 0;
+    }
+
+    .nav-menu li a {
+      color: white;
+      text-decoration: none;
+      padding: 20px 25px;
+      display: block;
+      transition: background 0.3s;
+    }
+
+    .nav-menu li a:hover,
+    .nav-menu li a.active {
+      background: #374151;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn-primary {
+      background: white;
+      color: #667eea;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Filters Section */
+    .filters-section {
+      background: #f9fafb;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 40px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .filters-section h2 {
+      margin-bottom: 20px;
+      color: #1f2937;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #374151;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .filter-btn {
+      background: #2563eb;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .filter-btn:hover {
+      background: #1e40af;
+    }
+
+    /* Properties Grid */
+    .properties-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .property-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .property-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: #e5e7eb;
+    }
+
+    .property-content {
+      padding: 20px;
+    }
+
+    .property-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1f2937;
+    }
+
+    .property-location {
+      color: #6b7280;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .property-features {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .property-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 15px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .property-price {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .property-status {
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-available { background: #d1fae5; color: #065f46; }
+    .status-sold { background: #fee2e2; color: #991b1b; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      font-size: 18px;
+      color: #6b7280;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1f2937;
+      color: white;
+      padding: 40px 20px;
+      margin-top: 60px;
+      text-align: center;
+    }
+
+    .footer p {
+      opacity: 0.8;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-toggle {
+        display: block;
+      }
+
+      .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #1f2937;
+        flex-direction: column;
+        display: none;
+      }
+
+      .nav-menu.active {
+        display: flex;
+      }
+
+      .nav-menu li a {
+        padding: 15px 20px;
+        border-top: 1px solid #374151;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .properties-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo">🏠 UTAH REIA</a>
+      <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="add-property.html">List Property</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Find Your Dream Property</h1>
+    <p>Discover the perfect home from our curated collection of premium properties</p>
+    <div class="hero-buttons">
+      <a href="#properties" class="btn btn-primary">Browse Properties</a>
+      <a href="add-property.html" class="btn btn-secondary">List Your Property</a>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container" id="properties">
+    <!-- Filters -->
+    <div class="filters-section">
+      <h2>Search Properties</h2>
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label>Property Type</label>
+          <select id="propertyTypeFilter">
+            <option value="">All Types</option>
+            <option value="House">House</option>
+            <option value="Apartment">Apartment</option>
+            <option value="Condo">Condo</option>
+            <option value="Townhouse">Townhouse</option>
+            <option value="Villa">Villa</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Min Price</label>
+          <input type="number" id="minPriceFilter" placeholder="$0">
+        </div>
+        <div class="filter-group">
+          <label>Max Price</label>
+          <input type="number" id="maxPriceFilter" placeholder="Any">
+        </div>
+        <div class="filter-group">
+          <label>Status</label>
+          <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="Available">Available</option>
+            <option value="Sold">Sold</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+      </div>
+      <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading">Loading properties...</div>
+
+    <!-- Error -->
+    <div id="error" class="error-message" style="display: none;"></div>
+
+    <!-- No Results -->
+    <div id="noResults" class="no-results" style="display: none;">
+      <h3>No Properties Found</h3>
+      <p>Try adjusting your filters or check back later.</p>
+    </div>
+
+    <!-- Properties Grid -->
+    <div id="propertiesGrid" class="properties-grid"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 UTAH REIA. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Navigation Toggle
+    function toggleMenu() {
+      document.getElementById('navMenu').classList.toggle('active');
+    }
+
+    // Airtable Configuration
+    // ⚠️ IMPORTANT: Replace with your actual Airtable credentials
+    const AIRTABLE_CONFIG = {
+      apiKey: 'YOUR_AIRTABLE_API_TOKEN',
+      baseId: 'YOUR_BASE_ID',
+      tableName: 'Properties'
+    };
+
+    let allProperties = [];
+
+    // Load properties on page load
+    document.addEventListener('DOMContentLoaded', loadProperties);
+
+    async function loadProperties() {
+      try {
+        showLoading();
+        
+        const response = await fetch(
+          `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to load properties');
+        }
+
+        const data = await response.json();
+        allProperties = data.records.map(record => ({
+          id: record.id,
+          ...record.fields
+        }));
+
+        hideLoading();
+        displayProperties(allProperties);
+
+      } catch (error) {
+        console.error('Error:', error);
+        hideLoading();
+        showError('Failed to load properties. Please try again later.');
+      }
+    }
+
+    function displayProperties(properties) {
+      const grid = document.getElementById('propertiesGrid');
+      
+      if (properties.length === 0) {
+        grid.innerHTML = '';
+        document.getElementById('noResults').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('noResults').style.display = 'none';
+      
+      grid.innerHTML = properties.map(property => {
+        const imageUrl = property.Image && property.Image[0] 
+          ? property.Image[0].url 
+          : 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=No+Image';
+        
+        return `
+          <div class="property-card" onclick="viewProperty('${property.id}')">
+            <img src="${imageUrl}" 
+                 alt="${property.Title || 'Property'}" 
+                 class="property-image"
+                 onerror="this.src='https://via.placeholder.com/400x300/e5e7eb/6b7280?text=No+Image'">
+            <div class="property-content">
+              <div class="property-title">${property.Title || 'Untitled Property'}</div>
+              <div class="property-location">
+                📍 ${property.Location || 'Location not specified'}
+              </div>
+              <div class="property-features">
+                ${property.Bedrooms ? `🛏️ ${property.Bedrooms} Beds` : ''}
+                ${property.Bathrooms ? `🛁 ${property.Bathrooms} Baths` : ''}
+                ${property['Square Feet'] ? `📐 ${formatNumber(property['Square Feet'])} sqft` : ''}
+              </div>
+              <div class="property-footer">
+                <div class="property-price">${formatPrice(property.Price)}</div>
+                ${property.Status ? `<div class="property-status status-${(property.Status || '').toLowerCase()}">${property.Status}</div>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function applyFilters() {
+      const typeFilter = document.getElementById('propertyTypeFilter').value;
+      const minPrice = parseFloat(document.getElementById('minPriceFilter').value) || 0;
+      const maxPrice = parseFloat(document.getElementById('maxPriceFilter').value) || Infinity;
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      const filtered = allProperties.filter(property => {
+        const matchesType = !typeFilter || property['Property Type'] === typeFilter;
+        const matchesMinPrice = !property.Price || property.Price >= minPrice;
+        const matchesMaxPrice = !property.Price || property.Price <= maxPrice;
+        const matchesStatus = !statusFilter || property.Status === statusFilter;
+
+        return matchesType && matchesMinPrice && matchesMaxPrice && matchesStatus;
+      });
+
+      displayProperties(filtered);
+    }
+
+    function viewProperty(id) {
+      const property = allProperties.find(p => p.id === id);
+      if (property) {
+        alert(`Property: ${property.Title}\nPrice: ${formatPrice(property.Price)}\nLocation: ${property.Location}\n\nContact us for more details!`);
+      }
+    }
+
+    function formatPrice(price) {
+      if (!price) return 'Price not available';
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0
+      }).format(price);
+    }
+
+    function formatNumber(num) {
+      if (!num) return '0';
+      return new Intl.NumberFormat('en-US').format(num);
+    }
+
+    function showLoading() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('propertiesGrid').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('propertiesGrid').style.display = 'grid';
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('error');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+      document.getElementById('propertiesGrid').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

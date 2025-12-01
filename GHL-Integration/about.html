@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - UTAH REIA</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      background: #1f2937;
+      color: white;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      padding: 15px 0;
+      color: white;
+      text-decoration: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 0;
+    }
+
+    .nav-menu li a {
+      color: white;
+      text-decoration: none;
+      padding: 20px 25px;
+      display: block;
+      transition: background 0.3s;
+    }
+
+    .nav-menu li a:hover,
+    .nav-menu li a.active {
+      background: #374151;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+
+    .page-header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    .about-section {
+      margin-bottom: 50px;
+    }
+
+    .about-section h2 {
+      font-size: 32px;
+      color: #1f2937;
+      margin-bottom: 20px;
+    }
+
+    .about-section p {
+      font-size: 18px;
+      line-height: 1.8;
+      color: #4b5563;
+      margin-bottom: 15px;
+    }
+
+    /* Stats Section */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      margin: 50px 0;
+    }
+
+    .stat-card {
+      background: #f9fafb;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .stat-number {
+      font-size: 48px;
+      font-weight: bold;
+      color: #2563eb;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 16px;
+      color: #6b7280;
+    }
+
+    /* Values Section */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .value-card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-left: 4px solid #2563eb;
+    }
+
+    .value-card h3 {
+      font-size: 22px;
+      color: #1f2937;
+      margin-bottom: 15px;
+    }
+
+    .value-card p {
+      font-size: 16px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1f2937;
+      color: white;
+      padding: 40px 20px;
+      margin-top: 60px;
+      text-align: center;
+    }
+
+    .footer p {
+      opacity: 0.8;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-toggle {
+        display: block;
+      }
+
+      .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #1f2937;
+        flex-direction: column;
+        display: none;
+      }
+
+      .nav-menu.active {
+        display: flex;
+      }
+
+      .nav-menu li a {
+        padding: 15px 20px;
+        border-top: 1px solid #374151;
+      }
+
+      .page-header h1 {
+        font-size: 32px;
+      }
+
+      .about-section h2 {
+        font-size: 26px;
+      }
+
+      .stat-number {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="home-page.html" class="logo">🏠 UTAH REIA</a>
+      <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="home-page.html">Home</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="add-property.html">List Property</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <h1>About UTAH REIA</h1>
+    <p>Your trusted partner in finding the perfect property</p>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Our Story -->
+    <div class="about-section">
+      <h2>Our Story</h2>
+      <p>
+        Founded with a vision to revolutionize the real estate experience, UTAH REIA has been connecting buyers with their dream properties since 2020. We understand that finding the right home is more than just a transaction—it's about discovering a place where memories are made and futures are built.
+      </p>
+      <p>
+        Our platform combines cutting-edge technology with personalized service to make property search simple, transparent, and enjoyable. Whether you're a first-time buyer or a seasoned investor, we're here to guide you every step of the way.
+      </p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">500+</div>
+        <div class="stat-label">Properties Listed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1,200+</div>
+        <div class="stat-label">Happy Clients</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">50+</div>
+        <div class="stat-label">Cities Covered</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Support Available</div>
+      </div>
+    </div>
+
+    <!-- Our Mission -->
+    <div class="about-section">
+      <h2>Our Mission</h2>
+      <p>
+        At UTAH REIA, our mission is to empower individuals and families to make informed real estate decisions with confidence. We strive to create a seamless, transparent, and efficient property marketplace that serves the needs of modern buyers and sellers.
+      </p>
+    </div>
+
+    <!-- Our Values -->
+    <div class="about-section">
+      <h2>Our Values</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <h3>🎯 Integrity</h3>
+          <p>We believe in honest, transparent dealings and always put our clients' interests first.</p>
+        </div>
+        <div class="value-card">
+          <h3>💡 Innovation</h3>
+          <p>We continuously evolve our platform to provide the best user experience and cutting-edge features.</p>
+        </div>
+        <div class="value-card">
+          <h3>🤝 Trust</h3>
+          <p>Building lasting relationships through reliability and consistent delivery of exceptional service.</p>
+        </div>
+        <div class="value-card">
+          <h3>🌟 Excellence</h3>
+          <p>We maintain the highest standards in everything we do, from property listings to customer support.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Why Choose Us -->
+    <div class="about-section">
+      <h2>Why Choose Us</h2>
+      <p>
+        <strong>Comprehensive Listings:</strong> Access to a wide range of properties across multiple locations, all verified and up-to-date.
+      </p>
+      <p>
+        <strong>Expert Guidance:</strong> Our team of real estate professionals is always ready to assist you with advice and support.
+      </p>
+      <p>
+        <strong>User-Friendly Platform:</strong> Easy-to-use search tools and filters help you find exactly what you're looking for quickly.
+      </p>
+      <p>
+        <strong>Secure Transactions:</strong> We prioritize your security with verified listings and secure communication channels.
+      </p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 UTAH REIA. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('navMenu').classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
