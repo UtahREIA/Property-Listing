@@ -257,9 +257,10 @@
 
     .modal.active {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
       padding: 40px 20px;
+      min-height: 100vh;
     }
 
     .modal-content {
@@ -269,7 +270,11 @@
       width: 100%;
       position: relative;
       animation: slideIn 0.3s ease;
-      margin: 0;
+      margin: auto;
+      max-height: 90vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     @keyframes slideIn {
