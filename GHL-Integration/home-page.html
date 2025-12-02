@@ -724,7 +724,9 @@
       `;
 
       document.getElementById('modalDetails').innerHTML = modalHTML;
-      document.getElementById('propertyModal').classList.add('active');
+      const modal = document.getElementById('propertyModal');
+      modal.classList.add('active');
+      modal.scrollTop = 0; // Scroll modal to top
       document.body.style.overflow = 'hidden';
     }
 
