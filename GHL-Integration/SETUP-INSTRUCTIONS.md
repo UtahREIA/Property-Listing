@@ -9,6 +9,7 @@ The API tokens have been removed from the HTML files for security. You need to a
 **IMPORTANT:** Your credentials are stored locally in `.env.example` file. Do not commit this file to GitHub!
 
 You'll need:
+
 - Your Airtable API Token
 - Base ID: `appvnc6bZuI2D2DSR`
 - Table Name: `Properties`
