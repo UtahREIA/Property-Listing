@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Property Listings - UTAH REIA</title>
-  <style>
+<!-- Property Listings Page for GoHighLevel -->
+<style>
     * {
       margin: 0;
       padding: 0;
@@ -15,62 +10,6 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       color: #333;
-    }
-
-    /* Navigation Bar */
-    .navbar {
-      background: #1f2937;
-      color: white;
-      padding: 0;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 20px;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      padding: 15px 0;
-      color: white;
-      text-decoration: none;
-    }
-
-    .nav-menu {
-      display: flex;
-      list-style: none;
-      gap: 0;
-    }
-
-    .nav-menu li a {
-      color: white;
-      text-decoration: none;
-      padding: 20px 25px;
-      display: block;
-      transition: background 0.3s;
-    }
-
-    .nav-menu li a:hover,
-    .nav-menu li a.active {
-      background: #374151;
-    }
-
-    .nav-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
     }
 
     /* Hero Section */
@@ -289,44 +228,8 @@
       color: #6b7280;
     }
 
-    /* Footer */
-    .footer {
-      background: #1f2937;
-      color: white;
-      padding: 40px 20px;
-      margin-top: 60px;
-      text-align: center;
-    }
-
-    .footer p {
-      opacity: 0.8;
-    }
-
     /* Responsive */
     @media (max-width: 768px) {
-      .nav-toggle {
-        display: block;
-      }
-
-      .nav-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: #1f2937;
-        flex-direction: column;
-        display: none;
-      }
-
-      .nav-menu.active {
-        display: flex;
-      }
-
-      .nav-menu li a {
-        padding: 15px 20px;
-        border-top: 1px solid #374151;
-      }
-
       .hero h1 {
         font-size: 32px;
       }
@@ -344,23 +247,8 @@
       }
     }
   </style>
-</head>
-<body>
-  <!-- Navigation Bar -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="/" class="logo">🏠 UTAH REIA</a>
-      <button class="nav-toggle" onclick="toggleMenu()">☰</button>
-      <ul class="nav-menu" id="navMenu">
-        <li><a href="#" class="active">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="add-property.html">List Property</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-    </div>
-  </nav>
 
-  <!-- Hero Section -->
+<!-- Hero Section -->
   <section class="hero">
     <h1>Find Your Dream Property</h1>
     <p>Discover the perfect home from our curated collection of premium properties</p>
@@ -424,16 +312,7 @@
     <div id="propertiesGrid" class="properties-grid"></div>
   </div>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>&copy; 2025 UTAH REIA. All rights reserved.</p>
-  </footer>
-
   <script>
-    // Navigation Toggle
-    function toggleMenu() {
-      document.getElementById('navMenu').classList.toggle('active');
-    }
 
     // Airtable Configuration
     // ⚠️ IMPORTANT: Replace with your actual Airtable credentials
@@ -580,5 +459,3 @@
       document.getElementById('propertiesGrid').style.display = 'none';
     }
   </script>
-</body>
-</html>
