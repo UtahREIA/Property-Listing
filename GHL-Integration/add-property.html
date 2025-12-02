@@ -91,6 +91,27 @@
       transition: border-color 0.3s;
     }
 
+    .form-group input[type="file"] {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .form-group input[type="file"]::file-selector-button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .form-group input[type="file"]::file-selector-button:hover {
+      background: #1e40af;
+    }
+
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
@@ -286,9 +307,19 @@
           </div>
 
           <div class="form-group">
-            <label>Image URL</label>
+            <label>Property Image</label>
+            <input type="file" id="imageFile" accept="image/*">
+            <small>Upload a high-quality image of your property (JPG, PNG, or WEBP)</small>
+            <div id="imagePreview" style="margin-top: 15px; display: none;">
+              <img id="previewImg" style="max-width: 100%; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" alt="Preview">
+              <button type="button" onclick="removeImage()" style="display: block; margin-top: 10px; background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">Remove Image</button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Or Image URL (Optional)</label>
             <input type="url" id="imageUrl" placeholder="https://example.com/property-image.jpg">
-            <small>Provide a direct link to a high-quality image of your property</small>
+            <small>Alternatively, provide a direct link to an image</small>
           </div>
 
           <div class="form-group">
@@ -313,6 +344,39 @@
       baseId: 'YOUR_BASE_ID',
       tableName: 'Properties'
     };
+
+    // Image Preview Functionality
+    let uploadedImageData = null;
+
+    document.getElementById('imageFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Image size should be less than 5MB');
+          e.target.value = '';
+          return;
+        }
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          document.getElementById('previewImg').src = event.target.result;
+          document.getElementById('imagePreview').style.display = 'block';
+          uploadedImageData = {
+            filename: file.name,
+            data: event.target.result
+          };
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function removeImage() {
+      document.getElementById('imageFile').value = '';
+      document.getElementById('imagePreview').style.display = 'none';
+      uploadedImageData = null;
+    }
 
     document.getElementById('addPropertyForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -346,8 +410,17 @@
       const yearBuilt = document.getElementById('yearBuilt').value;
       if (yearBuilt) propertyData['Year Built'] = parseInt(yearBuilt);
 
-      const imageUrl = document.getElementById('imageUrl').value;
-      if (imageUrl) propertyData.Image = [{ url: imageUrl }];
+      // Handle image - prioritize uploaded file over URL
+      if (uploadedImageData) {
+        // Upload file as Airtable attachment
+        propertyData.Image = [{
+          filename: uploadedImageData.filename,
+          url: uploadedImageData.data
+        }];
+      } else {
+        const imageUrl = document.getElementById('imageUrl').value;
+        if (imageUrl) propertyData.Image = [{ url: imageUrl }];
+      }
 
       const amenities = document.getElementById('amenities').value;
       if (amenities) propertyData.Amenities = amenities;
@@ -382,6 +455,7 @@
         // Success!
         showMessage('🎉 Property added successfully! Redirecting to home page...', 'success');
         document.getElementById('addPropertyForm').reset();
+        removeImage(); // Clear image preview
 
         // Redirect to home page after 2 seconds
         setTimeout(() => {
