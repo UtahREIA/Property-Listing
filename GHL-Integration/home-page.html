@@ -314,11 +314,10 @@
 
   <script>
 
-    // Airtable Configuration
     // ⚠️ IMPORTANT: Replace with your actual Airtable credentials
     const AIRTABLE_CONFIG = {
-      apiKey: 'YOUR_AIRTABLE_API_TOKEN',
-      baseId: 'YOUR_BASE_ID',
+      apiKey: 'YOUR_AIRTABLE_API_TOKEN', // Replace with: patWbzUGqDFr4ZayL...
+      baseId: 'YOUR_BASE_ID',            // Replace with: appvnc6bZuI2D2DSR
       tableName: 'Properties'
     };
 
@@ -331,8 +330,13 @@
       try {
         showLoading();
         
+        // Check if credentials are configured
+        if (AIRTABLE_CONFIG.apiKey === 'YOUR_AIRTABLE_API_TOKEN') {
+          throw new Error('⚠️ Please configure your Airtable credentials in the code');
+        }
+        
         const response = await fetch(
-          `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}`,
+          `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${AIRTABLE_CONFIG.tableName}?maxRecords=100`,
           {
             headers: {
               'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`
@@ -341,7 +345,8 @@
         );
 
         if (!response.ok) {
-          throw new Error('Failed to load properties');
+          const error = await response.json();
+          throw new Error(error.error?.message || 'Failed to load properties');
         }
 
         const data = await response.json();
@@ -350,13 +355,14 @@
           ...record.fields
         }));
 
+        console.log(`Loaded ${allProperties.length} properties successfully`);
         hideLoading();
         displayProperties(allProperties);
 
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error loading properties:', error);
         hideLoading();
-        showError('Failed to load properties. Please try again later.');
+        showError(error.message || 'Failed to load properties. Please check your Airtable credentials.');
       }
     }
 
@@ -371,7 +377,11 @@
 
       document.getElementById('noResults').style.display = 'none';
       
-      grid.innerHTML = properties.map(property => {
+      // Use DocumentFragment for better performance
+      const fragment = document.createDocumentFragment();
+      const tempDiv = document.createElement('div');
+      
+      tempDiv.innerHTML = properties.map(property => {
         const imageUrl = property.Image && property.Image[0] 
           ? property.Image[0].url 
           : 'https://via.placeholder.com/400x300/e5e7eb/6b7280?text=No+Image';
@@ -381,6 +391,7 @@
             <img src="${imageUrl}" 
                  alt="${property.Title || 'Property'}" 
                  class="property-image"
+                 loading="lazy"
                  onerror="this.src='https://via.placeholder.com/400x300/e5e7eb/6b7280?text=No+Image'">
             <div class="property-content">
               <div class="property-title">${property.Title || 'Untitled Property'}</div>
@@ -400,6 +411,9 @@
           </div>
         `;
       }).join('');
+      
+      grid.innerHTML = '';
+      grid.appendChild(tempDiv);
     }
 
     function applyFilters() {
