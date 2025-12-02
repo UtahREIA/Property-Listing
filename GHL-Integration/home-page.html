@@ -240,6 +240,175 @@
       color: #6b7280;
     }
 
+    /* Property Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 32px;
+      cursor: pointer;
+      color: #6b7280;
+      background: none;
+      border: none;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .modal-close:hover {
+      background: #f3f4f6;
+    }
+
+    .modal-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .modal-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 10px;
+    }
+
+    .modal-price {
+      font-size: 36px;
+      font-weight: 700;
+      color: #2563eb;
+      margin-bottom: 20px;
+    }
+
+    .modal-location {
+      font-size: 18px;
+      color: #6b7280;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-features {
+      display: flex;
+      gap: 30px;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .modal-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      color: #374151;
+    }
+
+    .modal-section {
+      margin-bottom: 25px;
+    }
+
+    .modal-section h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 12px;
+    }
+
+    .modal-section p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #4b5563;
+    }
+
+    .agent-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 25px;
+      border-radius: 10px;
+      color: white;
+      margin-top: 30px;
+    }
+
+    .agent-card h3 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .agent-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .agent-info-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    .agent-info-item a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .agent-info-item a:hover {
+      text-decoration: underline;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .hero h1 {
@@ -324,6 +493,14 @@
     <div id="propertiesGrid" class="properties-grid"></div>
   </div>
 
+  <!-- Property Details Modal -->
+  <div id="propertyModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div id="modalDetails"></div>
+    </div>
+  </div>
+
   <script>
 
     // ⚠️ IMPORTANT: Replace with your actual Airtable credentials
@@ -348,7 +525,7 @@
         }
         
         // Fetch only necessary fields for faster loading
-        const fields = ['Title', 'Price', 'Location', 'Property Type', 'Bedrooms', 'Bathrooms', 'Square Feet', 'Status', 'Image'];
+        const fields = ['Title', 'Price', 'Location', 'Property Type', 'Bedrooms', 'Bathrooms', 'Square Feet', 'Status', 'Image', 'Description', 'Amenities', 'Year Built', "Agent's Name", "Agent's Email", "Agent's Phone Number"];
         const fieldParams = fields.map(f => `fields%5B%5D=${encodeURIComponent(f)}`).join('&');
         
         const response = await fetch(
@@ -463,10 +640,76 @@
 
     function viewProperty(id) {
       const property = allProperties.find(p => p.id === id);
-      if (property) {
-        alert(`Property: ${property.Title}\nPrice: ${formatPrice(property.Price)}\nLocation: ${property.Location}\n\nContact us for more details!`);
-      }
+      if (!property) return;
+
+      const imageUrl = property.Image && property.Image[0] 
+        ? property.Image[0].url 
+        : 'https://via.placeholder.com/800x400/e5e7eb/6b7280?text=No+Image';
+
+      const modalHTML = `
+        <img src="${imageUrl}" 
+             alt="${property.Title || 'Property'}" 
+             class="modal-image"
+             onerror="this.src='https://via.placeholder.com/800x400/e5e7eb/6b7280?text=No+Image'">
+        
+        <div class="modal-body">
+          <div class="modal-title">${property.Title || 'Untitled Property'}</div>
+          <div class="modal-price">${formatPrice(property.Price)}</div>
+          <div class="modal-location">📍 ${property.Location || 'Location not specified'}</div>
+          
+          ${property.Status ? `<div class="property-status status-${(property.Status || '').toLowerCase()}" style="display: inline-block; margin-bottom: 20px;">${property.Status}</div>` : ''}
+          
+          <div class="modal-features">
+            ${property.Bedrooms ? `<div class="modal-feature">🛏️ <strong>${property.Bedrooms}</strong> Bedrooms</div>` : ''}
+            ${property.Bathrooms ? `<div class="modal-feature">🛁 <strong>${property.Bathrooms}</strong> Bathrooms</div>` : ''}
+            ${property['Square Feet'] ? `<div class="modal-feature">📐 <strong>${formatNumber(property['Square Feet'])}</strong> sq ft</div>` : ''}
+            ${property['Year Built'] ? `<div class="modal-feature">📅 Built in <strong>${property['Year Built']}</strong></div>` : ''}
+            ${property['Property Type'] ? `<div class="modal-feature">🏠 <strong>${property['Property Type']}</strong></div>` : ''}
+          </div>
+          
+          ${property.Description ? `
+            <div class="modal-section">
+              <h3>Description</h3>
+              <p>${property.Description}</p>
+            </div>
+          ` : ''}
+          
+          ${property.Amenities ? `
+            <div class="modal-section">
+              <h3>Amenities</h3>
+              <p>${property.Amenities}</p>
+            </div>
+          ` : ''}
+          
+          ${property["Agent's Name"] || property["Agent's Email"] || property["Agent's Phone Number"] ? `
+            <div class="agent-card">
+              <h3>👤 Contact Agent</h3>
+              <div class="agent-info">
+                ${property["Agent's Name"] ? `<div class="agent-info-item">👤 <strong>${property["Agent's Name"]}</strong></div>` : ''}
+                ${property["Agent's Email"] ? `<div class="agent-info-item">✉️ <a href="mailto:${property["Agent's Email"]}">${property["Agent's Email"]}</a></div>` : ''}
+                ${property["Agent's Phone Number"] ? `<div class="agent-info-item">📞 <a href="tel:${property["Agent's Phone Number"]}">${property["Agent's Phone Number"]}</a></div>` : ''}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      document.getElementById('modalDetails').innerHTML = modalHTML;
+      document.getElementById('propertyModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
+
+    function closeModal() {
+      document.getElementById('propertyModal').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('propertyModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
 
     function formatPrice(price) {
       if (!price) return 'Price not available';
