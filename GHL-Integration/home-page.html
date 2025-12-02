@@ -726,7 +726,11 @@
       document.getElementById('modalDetails').innerHTML = modalHTML;
       const modal = document.getElementById('propertyModal');
       modal.classList.add('active');
-      modal.scrollTop = 0; // Scroll modal to top
+      
+      // Scroll both the page and modal to top for visibility
+      window.scrollTo(0, 0);
+      modal.scrollTop = 0;
+      
       document.body.style.overflow = 'hidden';
     }
 
