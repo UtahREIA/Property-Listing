@@ -248,26 +248,28 @@
       left: 0;
       top: 0;
       width: 100%;
-      height: 100%;
+      height: 100vh;
       background: rgba(0, 0, 0, 0.7);
-      overflow-y: scroll !important;
+      overflow-y: auto;
       overflow-x: hidden;
-      padding: 20px 0;
       -webkit-overflow-scrolling: touch;
     }
 
     .modal.active {
-      display: block;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
     }
 
     .modal-content {
       background: white;
       border-radius: 12px;
       max-width: 800px;
-      width: 90%;
-      margin: 0 auto 40px auto;
+      width: 100%;
       position: relative;
       animation: slideIn 0.3s ease;
+      margin: 0;
     }
 
     @keyframes slideIn {
@@ -429,13 +431,12 @@
         grid-template-columns: 1fr;
       }
 
-      .modal {
-        padding: 10px 0;
+      .modal.active {
+        padding: 20px 10px;
       }
 
       .modal-content {
-        width: 95%;
-        margin: 0 auto 20px auto;
+        width: 100%;
       }
 
       .modal-image {
@@ -737,9 +738,9 @@
       document.body.style.overflow = 'auto';
     }
 
-    // Close modal when clicking outside
+    // Close modal when clicking outside content
     document.getElementById('propertyModal').addEventListener('click', function(e) {
-      if (e.target === this) {
+      if (e.target.id === 'propertyModal') {
         closeModal();
       }
     });
