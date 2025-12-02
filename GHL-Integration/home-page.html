@@ -733,6 +733,9 @@
       const modal = document.getElementById('propertyModal');
       const modalContent = modal.querySelector('.modal-content');
       
+      // Scroll page to top first so modal is visible
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
       // Prevent body scroll
       document.body.style.overflow = 'hidden';
       
