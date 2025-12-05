@@ -1,0 +1,16 @@
+{
+  "name": "property-listing-backend",
+  "version": "1.0.0",
+  "description": "Secure backend webhooks for property listing application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
