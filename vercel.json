@@ -14,6 +14,14 @@
     {
       "src": "/api/add-property",
       "dest": "serverless/add-property.js"
+    },
+    {
+      "src": "/api/update-property-status",
+      "dest": "serverless/update-property-status.js"
+    },
+    {
+      "src": "/api/delete-property",
+      "dest": "serverless/delete-property.js"
     }
   ]
 }

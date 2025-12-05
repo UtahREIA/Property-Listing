@@ -536,11 +536,35 @@
     </div>
   </div>
 
+  <!-- Update Status Modal -->
+  <div id="statusModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <button class="modal-close" onclick="closeStatusModal()">&times;</button>
+      <div class="modal-body">
+        <h3 style="margin-bottom: 20px;">Update Property Status</h3>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 10px; font-weight: 600;">Select New Status:</label>
+          <select id="newStatusSelect" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px;">
+            <option value="Available">Available</option>
+            <option value="Pending">Pending</option>
+            <option value="Sold">Sold</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button onclick="closeStatusModal()" style="flex: 1; padding: 12px; background: #6b7280; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
+          <button onclick="confirmStatusUpdate()" style="flex: 1; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
 
     // API Configuration - Replace with your deployed webhook URLs
     const API_CONFIG = {
       getPropertiesUrl: 'https://property-listing-32ax.vercel.app/api/get-properties',
+      updateStatusUrl: 'https://property-listing-32ax.vercel.app/api/update-property-status',
+      deletePropertyUrl: 'https://property-listing-32ax.vercel.app/api/delete-property',
     };
 
     let allProperties = [];
@@ -714,6 +738,19 @@
               </div>
             </div>
           ` : ''}
+          
+          <!-- Property Management Actions -->
+          <div class="modal-section" style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
+            <h3 style="margin-bottom: 15px;">Manage This Property</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button onclick="openStatusModal('${property.id}', '${property.Status || 'Available'}')" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                📝 Update Status
+              </button>
+              <button onclick="deleteProperty('${property.id}')" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
+                🗑️ Delete Property
+              </button>
+            </div>
+          </div>
         </div>
       `;
 
@@ -777,4 +814,93 @@
       errorEl.style.display = 'block';
       document.getElementById('propertiesGrid').style.display = 'none';
     }
+
+    // Property Management Functions
+    let currentPropertyId = null;
+
+    function openStatusModal(propertyId, currentStatus) {
+      currentPropertyId = propertyId;
+      document.getElementById('newStatusSelect').value = currentStatus;
+      document.getElementById('statusModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeStatusModal() {
+      document.getElementById('statusModal').classList.remove('active');
+      document.body.style.overflow = 'auto';
+      currentPropertyId = null;
+    }
+
+    async function confirmStatusUpdate() {
+      if (!currentPropertyId) return;
+
+      const newStatus = document.getElementById('newStatusSelect').value;
+      
+      try {
+        const response = await fetch(API_CONFIG.updateStatusUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            recordId: currentPropertyId,
+            status: newStatus
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          alert('Property status updated successfully!');
+          closeStatusModal();
+          closeModal();
+          // Reload properties to show updated status
+          await loadProperties();
+        } else {
+          alert('Failed to update property status: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error updating property status:', error);
+        alert('Error updating property status. Please try again.');
+      }
+    }
+
+    async function deleteProperty(propertyId) {
+      if (!confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(API_CONFIG.deletePropertyUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            recordId: propertyId
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          alert('Property deleted successfully!');
+          closeModal();
+          // Reload properties to remove deleted property
+          await loadProperties();
+        } else {
+          alert('Failed to delete property: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting property:', error);
+        alert('Error deleting property. Please try again.');
+      }
+    }
+
+    // Close status modal when clicking outside
+    document.getElementById('statusModal').addEventListener('click', function(e) {
+      if (e.target.id === 'statusModal') {
+        closeStatusModal();
+      }
+    });
   </script>
