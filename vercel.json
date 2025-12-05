@@ -15,9 +15,5 @@
       "src": "/api/add-property",
       "dest": "serverless/add-property.js"
     }
-  ],
-  "env": {
-    "AIRTABLE_API_KEY": "@airtable_api_key",
-    "AIRTABLE_BASE_ID": "@airtable_base_id"
-  }
+  ]
 }
