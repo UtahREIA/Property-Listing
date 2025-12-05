@@ -250,16 +250,15 @@
       right: 0;
       bottom: 0;
       width: 100%;
-      height: 100vh;
+      height: 100%;
       background: rgba(0, 0, 0, 0.7);
-      overflow: hidden;
+      overflow-y: scroll !important;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
     }
 
     .modal.active {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      display: block !important;
     }
 
     .modal-content {
@@ -269,10 +268,8 @@
       width: 90%;
       position: relative;
       animation: slideIn 0.3s ease;
-      max-height: 90vh;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
+      margin: 40px auto;
+      min-height: 200px;
     }
 
     @keyframes slideIn {
@@ -287,9 +284,9 @@
     }
 
     .modal-close {
-      position: sticky;
+      position: absolute;
       top: 10px;
-      left: calc(100% - 50px);
+      right: 10px;
       z-index: 10;
       font-size: 32px;
       cursor: pointer;
@@ -304,7 +301,6 @@
       border-radius: 50%;
       transition: background 0.3s;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      margin: 10px 10px -50px auto;
     }
 
     .modal-close:hover {
@@ -738,58 +734,56 @@
               </div>
             </div>
           ` : ''}
-          
-          <!-- Property Management Actions -->
-          <div class="modal-section" style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
-            <h3 style="margin-bottom: 15px;">Manage This Property</h3>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <button class="update-status-btn" data-property-id="${property.id}" data-current-status="${property.Status || 'Available'}" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
-                📝 Update Status
-              </button>
-              <button class="delete-property-btn" data-property-id="${property.id}" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
-                🗑️ Delete Property
-              </button>
-            </div>
+        </div>
+        
+        <div class="modal-body" style="border-top: 2px solid #e5e7eb; padding-top: 20px;">
+          <h3 style="margin-bottom: 15px;">Manage This Property</h3>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="update-status-btn" data-property-id="${property.id}" data-current-status="${property.Status || 'Available'}" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
+              📝 Update Status
+            </button>
+            <button class="delete-property-btn" data-property-id="${property.id}" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
+              🗑️ Delete Property
+            </button>
           </div>
         </div>
       `;
 
       document.getElementById('modalDetails').innerHTML = modalHTML;
       
-      // Attach event listeners to the buttons
-      const updateBtn = document.querySelector('.update-status-btn');
-      const deleteBtn = document.querySelector('.delete-property-btn');
-      
-      if (updateBtn) {
-        updateBtn.addEventListener('click', function() {
-          openStatusModal(this.getAttribute('data-property-id'), this.getAttribute('data-current-status'));
-        });
-      }
-      
-      if (deleteBtn) {
-        deleteBtn.addEventListener('click', function() {
-          deleteProperty(this.getAttribute('data-property-id'));
-        });
-      }
+      // Attach event listeners to the buttons after a short delay to ensure DOM is ready
+      setTimeout(function() {
+        const updateBtn = document.querySelector('.update-status-btn');
+        const deleteBtn = document.querySelector('.delete-property-btn');
+        
+        if (updateBtn) {
+          updateBtn.addEventListener('click', function() {
+            openStatusModal(this.getAttribute('data-property-id'), this.getAttribute('data-current-status'));
+          });
+        }
+        
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', function() {
+            deleteProperty(this.getAttribute('data-property-id'));
+          });
+        }
+      }, 100);
       const modal = document.getElementById('propertyModal');
-      const modalContent = modal.querySelector('.modal-content');
-      
-      // Scroll page to top first so modal is visible
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      // Prevent body scroll
-      document.body.style.overflow = 'hidden';
       
       // Show modal
       modal.classList.add('active');
       
-      // Scroll modal content to top
-      modalContent.scrollTop = 0;
+      // Scroll modal to top
+      modal.scrollTop = 0;
+      
+      // Also scroll page to top
+      setTimeout(function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 50);
     }
 
     function closeModal() {
       document.getElementById('propertyModal').classList.remove('active');
-      document.body.style.overflow = 'auto';
     }
 
     // Close modal when clicking outside content
@@ -838,12 +832,11 @@
       currentPropertyId = propertyId;
       document.getElementById('newStatusSelect').value = currentStatus;
       document.getElementById('statusModal').classList.add('active');
-      document.body.style.overflow = 'hidden';
+      document.getElementById('statusModal').scrollTop = 0;
     }
 
     function closeStatusModal() {
       document.getElementById('statusModal').classList.remove('active');
-      document.body.style.overflow = 'auto';
       currentPropertyId = null;
     }
 
