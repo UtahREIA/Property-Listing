@@ -743,10 +743,10 @@
           <div class="modal-section" style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
             <h3 style="margin-bottom: 15px;">Manage This Property</h3>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <button onclick="openStatusModal('${property.id}', '${property.Status || 'Available'}')" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
+              <button class="update-status-btn" data-property-id="${property.id}" data-current-status="${property.Status || 'Available'}" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
                 📝 Update Status
               </button>
-              <button onclick="deleteProperty('${property.id}')" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
+              <button class="delete-property-btn" data-property-id="${property.id}" style="flex: 1; min-width: 150px; padding: 12px 20px; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">
                 🗑️ Delete Property
               </button>
             </div>
@@ -755,6 +755,22 @@
       `;
 
       document.getElementById('modalDetails').innerHTML = modalHTML;
+      
+      // Attach event listeners to the buttons
+      const updateBtn = document.querySelector('.update-status-btn');
+      const deleteBtn = document.querySelector('.delete-property-btn');
+      
+      if (updateBtn) {
+        updateBtn.addEventListener('click', function() {
+          openStatusModal(this.getAttribute('data-property-id'), this.getAttribute('data-current-status'));
+        });
+      }
+      
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+          deleteProperty(this.getAttribute('data-property-id'));
+        });
+      }
       const modal = document.getElementById('propertyModal');
       const modalContent = modal.querySelector('.modal-content');
       
