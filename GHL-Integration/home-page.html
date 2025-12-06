@@ -532,6 +532,40 @@
     </div>
   </div>
 
+  <!-- Email Verification Modal -->
+  <div id="verificationModal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+      <button class="modal-close" onclick="closeVerificationModal()">&times;</button>
+      <div class="modal-body">
+        <h3 style="margin-bottom: 20px;">🔐 Verify Your Email</h3>
+        <p style="margin-bottom: 20px; color: #6b7280;">To manage this property, please verify that you're the contact person.</p>
+        
+        <div id="emailStep" style="display: block;">
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600;">Your Email Address:</label>
+            <input type="email" id="verifyEmail" placeholder="john@example.com" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px;">
+            <small style="display: block; margin-top: 5px; color: #6b7280;">Enter the contact email for this property</small>
+          </div>
+          <button onclick="requestVerificationCode()" style="width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Send Verification Code</button>
+        </div>
+
+        <div id="codeStep" style="display: none;">
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600;">Enter Verification Code:</label>
+            <input type="text" id="verifyCode" placeholder="123456" maxlength="6" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 20px; text-align: center; letter-spacing: 5px; font-weight: 600;">
+            <small style="display: block; margin-top: 5px; color: #6b7280;">Check your email for the 6-digit code</small>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button onclick="resetVerificationModal()" style="flex: 1; padding: 12px; background: #6b7280; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Back</button>
+            <button onclick="verifyCode()" style="flex: 1; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Verify</button>
+          </div>
+        </div>
+
+        <div id="verifyMessage" style="display: none; margin-top: 15px; padding: 12px; border-radius: 6px; text-align: center; font-weight: 600;"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Update Status Modal -->
   <div id="statusModal" class="modal">
     <div class="modal-content" style="max-width: 400px;">
@@ -561,6 +595,8 @@
       getPropertiesUrl: 'https://property-listing-32ax.vercel.app/api/get-properties',
       updateStatusUrl: 'https://property-listing-32ax.vercel.app/api/update-property-status',
       deletePropertyUrl: 'https://property-listing-32ax.vercel.app/api/delete-property',
+      sendVerificationUrl: 'https://property-listing-32ax.vercel.app/api/send-verification-code',
+      verifyCodeUrl: 'https://property-listing-32ax.vercel.app/api/verify-code',
     };
 
     let allProperties = [];
@@ -758,13 +794,19 @@
         
         if (updateBtn) {
           updateBtn.addEventListener('click', function() {
-            openStatusModal(this.getAttribute('data-property-id'), this.getAttribute('data-current-status'));
+            const propertyId = this.getAttribute('data-property-id');
+            const contactEmail = property["Contact's Email"];
+            // Require email verification before update
+            openVerificationModal(propertyId, contactEmail, 'update');
           });
         }
         
         if (deleteBtn) {
           deleteBtn.addEventListener('click', function() {
-            deleteProperty(this.getAttribute('data-property-id'));
+            const propertyId = this.getAttribute('data-property-id');
+            const contactEmail = property["Contact's Email"];
+            // Require email verification before delete
+            openVerificationModal(propertyId, contactEmail, 'delete');
           });
         }
       }, 100);
@@ -827,6 +869,140 @@
 
     // Property Management Functions
     let currentPropertyId = null;
+    let currentPropertyEmail = null;
+    let currentAction = null; // 'update' or 'delete'
+    let isVerified = false;
+
+    // Email Verification Functions
+    function openVerificationModal(propertyId, propertyEmail, action) {
+      currentPropertyId = propertyId;
+      currentPropertyEmail = propertyEmail;
+      currentAction = action;
+      isVerified = false;
+      
+      resetVerificationModal();
+      document.getElementById('verificationModal').classList.add('active');
+      document.getElementById('verificationModal').scrollTop = 0;
+      
+      // Pre-fill email if available
+      if (propertyEmail) {
+        document.getElementById('verifyEmail').value = propertyEmail;
+      }
+    }
+
+    function closeVerificationModal() {
+      document.getElementById('verificationModal').classList.remove('active');
+      resetVerificationModal();
+    }
+
+    function resetVerificationModal() {
+      document.getElementById('emailStep').style.display = 'block';
+      document.getElementById('codeStep').style.display = 'none';
+      document.getElementById('verifyMessage').style.display = 'none';
+      document.getElementById('verifyCode').value = '';
+    }
+
+    async function requestVerificationCode() {
+      const email = document.getElementById('verifyEmail').value.trim();
+      
+      if (!email) {
+        showVerifyMessage('Please enter your email address', 'error');
+        return;
+      }
+
+      try {
+        showVerifyMessage('Sending verification code...', 'info');
+        
+        const response = await fetch(API_CONFIG.sendVerificationUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            propertyId: currentPropertyId
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          document.getElementById('emailStep').style.display = 'none';
+          document.getElementById('codeStep').style.display = 'block';
+          showVerifyMessage('Verification code sent! Check your email.', 'success');
+          
+          // FOR TESTING ONLY - Remove in production
+          if (data.code) {
+            console.log('TEST MODE - Verification code:', data.code);
+          }
+        } else {
+          showVerifyMessage(data.error || 'Failed to send code', 'error');
+        }
+      } catch (error) {
+        console.error('Error sending verification code:', error);
+        showVerifyMessage('Failed to send verification code', 'error');
+      }
+    }
+
+    async function verifyCode() {
+      const email = document.getElementById('verifyEmail').value.trim();
+      const code = document.getElementById('verifyCode').value.trim();
+      
+      if (!code) {
+        showVerifyMessage('Please enter the verification code', 'error');
+        return;
+      }
+
+      try {
+        showVerifyMessage('Verifying...', 'info');
+        
+        const response = await fetch(API_CONFIG.verifyCodeUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            propertyId: currentPropertyId,
+            code: code
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          isVerified = true;
+          showVerifyMessage('✓ Verified successfully!', 'success');
+          
+          // Close verification modal and proceed with action
+          setTimeout(() => {
+            closeVerificationModal();
+            
+            if (currentAction === 'update') {
+              const property = allProperties.find(p => p.id === currentPropertyId);
+              if (property) {
+                openStatusModal(currentPropertyId, property.Status || 'Available');
+              }
+            } else if (currentAction === 'delete') {
+              proceedWithDelete();
+            }
+          }, 1000);
+        } else {
+          showVerifyMessage(data.error || 'Invalid code', 'error');
+        }
+      } catch (error) {
+        console.error('Error verifying code:', error);
+        showVerifyMessage('Verification failed', 'error');
+      }
+    }
+
+    function showVerifyMessage(text, type) {
+      const messageEl = document.getElementById('verifyMessage');
+      messageEl.textContent = text;
+      messageEl.style.display = 'block';
+      messageEl.style.background = type === 'success' ? '#d1fae5' : type === 'error' ? '#fee2e2' : '#dbeafe';
+      messageEl.style.color = type === 'success' ? '#065f46' : type === 'error' ? '#991b1b' : '#1e40af';
+    }
 
     function openStatusModal(propertyId, currentStatus) {
       currentPropertyId = propertyId;
@@ -838,6 +1014,7 @@
     function closeStatusModal() {
       document.getElementById('statusModal').classList.remove('active');
       currentPropertyId = null;
+      isVerified = false;
     }
 
     async function confirmStatusUpdate() {
@@ -874,7 +1051,12 @@
       }
     }
 
-    async function deleteProperty(propertyId) {
+    async function proceedWithDelete() {
+      if (!isVerified) {
+        alert('Please verify your email first');
+        return;
+      }
+
       if (!confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
         return;
       }
@@ -886,7 +1068,7 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            recordId: propertyId
+            recordId: currentPropertyId
           })
         });
 
@@ -895,6 +1077,7 @@
         if (response.ok && data.success) {
           alert('Property deleted successfully!');
           closeModal();
+          isVerified = false;
           // Reload properties to remove deleted property
           await loadProperties();
         } else {

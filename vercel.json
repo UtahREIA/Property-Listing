@@ -26,6 +26,14 @@
     {
       "src": "/api/upload-image",
       "dest": "serverless/upload-image.js"
+    },
+    {
+      "src": "/api/send-verification-code",
+      "dest": "serverless/send-verification-code.js"
+    },
+    {
+      "src": "/api/verify-code",
+      "dest": "serverless/verify-code.js"
     }
   ]
 }
