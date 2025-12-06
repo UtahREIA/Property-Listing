@@ -26,8 +26,8 @@ module.exports = async (req, res) => {
     const fields = [
       'Title', 'Price', 'Location', 'Property Type', 'Bedrooms', 
       'Bathrooms', 'Square Feet', 'Status', 'Image', 'Description', 
-      'Amenities', 'Year Built', "Agent's Name", "Agent's Email", 
-      "Agent's Phone Number"
+      'Amenities', 'Year Built', "Contact's Name", "Contact's Email", 
+      "Contact's Phone Number"
     ];
     
     const fieldParams = fields.map(f => `fields%5B%5D=${encodeURIComponent(f)}`).join('&');

@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
     if (!propertyData.Title || !propertyData.Price || !propertyData.Location) {
       return res.status(400).json({ 
         error: 'Missing required fields',
-        required: ['Title', 'Price', 'Location', 'Status', 'Description', "Agent's Name", "Agent's Email", "Agent's Phone Number"]
+        required: ['Title', 'Price', 'Location', 'Status', 'Description', "Contact's Name", "Contact's Email", "Contact's Phone Number"]
       });
     }
 

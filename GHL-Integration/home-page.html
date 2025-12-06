@@ -724,13 +724,13 @@
             </div>
           ` : ''}
           
-          ${property["Agent's Name"] || property["Agent's Email"] || property["Agent's Phone Number"] ? `
+          ${property["Contact's Name"] || property["Contact's Email"] || property["Contact's Phone Number"] ? `
             <div class="agent-card">
-              <h3>👤 Contact Agent</h3>
+              <h3>👤 Contact Information</h3>
               <div class="agent-info">
-                ${property["Agent's Name"] ? `<div class="agent-info-item">👤 <strong>${property["Agent's Name"]}</strong></div>` : ''}
-                ${property["Agent's Email"] ? `<div class="agent-info-item">✉️ <a href="mailto:${property["Agent's Email"]}">${property["Agent's Email"]}</a></div>` : ''}
-                ${property["Agent's Phone Number"] ? `<div class="agent-info-item">📞 <a href="tel:${property["Agent's Phone Number"]}">${property["Agent's Phone Number"]}</a></div>` : ''}
+                ${property["Contact's Name"] ? `<div class="agent-info-item">👤 <strong>${property["Contact's Name"]}</strong></div>` : ''}
+                ${property["Contact's Email"] ? `<div class="agent-info-item">✉️ <a href="mailto:${property["Contact's Email"]}">${property["Contact's Email"]}</a></div>` : ''}
+                ${property["Contact's Phone Number"] ? `<div class="agent-info-item">📞 <a href="tel:${property["Contact's Phone Number"]}">${property["Contact's Phone Number"]}</a></div>` : ''}
               </div>
             </div>
           ` : ''}
