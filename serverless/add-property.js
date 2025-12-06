@@ -1,5 +1,6 @@
 // Serverless function to add properties to Airtable
 // Deploy this to Vercel, Netlify, AWS Lambda, or any serverless platform
+// Updated to use Contact fields instead of Agent fields
 
 // Set these as environment variables in your serverless platform
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
