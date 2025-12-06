@@ -914,6 +914,9 @@
       try {
         showVerifyMessage('Sending verification code...', 'info');
         
+        console.log('📤 Sending request to:', API_CONFIG.sendVerificationUrl);
+        console.log('📤 Request data:', { email, propertyId: currentPropertyId });
+        
         const response = await fetch(API_CONFIG.sendVerificationUrl, {
           method: 'POST',
           headers: {
@@ -925,7 +928,9 @@
           })
         });
 
+        console.log('📥 Response status:', response.status);
         const data = await response.json();
+        console.log('📥 Response data:', data);
 
         if (response.ok && data.success) {
           // Store the verification token
@@ -934,19 +939,29 @@
           document.getElementById('emailStep').style.display = 'none';
           document.getElementById('codeStep').style.display = 'block';
           
-          // Display code in console for testing
+          // ALWAYS display code in console for testing/debugging
           if (data.code) {
+            console.log('');
+            console.log('═══════════════════════════════════');
             console.log('🔐 VERIFICATION CODE:', data.code);
-            console.log('Email sending may have failed. Use the code above to verify.');
-            showVerifyMessage(`Code sent! ${data.warning ? 'Check console for code.' : 'Check your email.'}`, 'success');
+            console.log('═══════════════════════════════════');
+            console.log('');
+            
+            if (data.warning || data.emailError) {
+              console.warn('⚠️ Email issue:', data.warning || data.emailError);
+              showVerifyMessage(`Code: ${data.code} (Email failed - check console)`, 'success');
+            } else {
+              showVerifyMessage(`Code sent! Also shown in console: ${data.code}`, 'success');
+            }
           } else {
             showVerifyMessage('Verification code sent! Check your email.', 'success');
           }
         } else {
+          console.error('❌ Request failed:', data);
           showVerifyMessage(data.error || 'Failed to send code', 'error');
         }
       } catch (error) {
-        console.error('Error sending verification code:', error);
+        console.error('❌ Error sending verification code:', error);
         showVerifyMessage('Failed to send verification code', 'error');
       }
     }

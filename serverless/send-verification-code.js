@@ -29,8 +29,11 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  console.log('🔔 Send verification code endpoint called');
+  
   try {
     const { email, propertyId } = req.body;
+    console.log(`📧 Request for email: ${email}, propertyId: ${propertyId}`);
 
     if (!email || !propertyId) {
       return res.status(400).json({ error: 'Email and property ID required' });
@@ -47,7 +50,10 @@ module.exports = async (req, res) => {
     const GMAIL_USER = process.env.GMAIL_USER;
     const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
     
+    console.log(`📮 Gmail credentials available: ${GMAIL_USER ? 'YES' : 'NO'}`);
+    
     if (GMAIL_USER && GMAIL_APP_PASSWORD) {
+      console.log('✉️ Attempting to send email via Gmail SMTP...');
       try {
         // Create transporter with Gmail SMTP
         const transporter = nodemailer.createTransport({
@@ -93,32 +99,37 @@ module.exports = async (req, res) => {
 
         // Send email
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Verification code sent to ${email} via Gmail SMTP. MessageId: ${info.messageId}`);
+        console.log(`✅ Verification code sent to ${email} via Gmail SMTP. MessageId: ${info.messageId}`);
+        console.log(`🔐 Code: ${code} (for debugging)`);
         
         return res.status(200).json({ 
           success: true,
           message: 'Verification code sent to your email',
-          token: token // Return token for verification
+          token: token,
+          code: code // ALWAYS return code for debugging
         });
       } catch (error) {
-        console.error('Error sending email via Gmail:', error);
+        console.error('❌ Error sending email via Gmail:', error.message);
+        console.error('Full error:', error);
         // Still return success since code is generated
         return res.status(200).json({ 
           success: true,
           message: 'Verification code generated',
           warning: 'Email sending failed, but code is stored',
           token: token,
-          code: code // Return code when email fails for debugging
+          code: code,
+          emailError: error.message
         });
       }
     } else {
       // For testing without Gmail credentials
-      console.log(`TEST MODE - Verification code for ${email}: ${code}`);
+      console.log(`⚠️ TEST MODE - No Gmail credentials found`);
+      console.log(`🔐 Verification code for ${email}: ${code}`);
       return res.status(200).json({ 
         success: true,
-        message: 'Verification code generated (test mode)',
+        message: 'Verification code generated (test mode - no email credentials)',
         token: token,
-        code: code // Return code in test mode only
+        code: code
       });
     }
 
