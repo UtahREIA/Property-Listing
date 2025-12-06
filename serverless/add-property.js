@@ -23,6 +23,14 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Check environment variables
+    if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
+      return res.status(500).json({ 
+        error: 'Server configuration error',
+        message: 'Missing Airtable credentials'
+      });
+    }
+
     // Get property data from request body
     const propertyData = req.body;
 
@@ -36,6 +44,9 @@ module.exports = async (req, res) => {
 
     // Add to Airtable
     const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`;
+    
+    console.log('Attempting to add property to:', url);
+    console.log('Property data:', JSON.stringify(propertyData, null, 2));
     
     const response = await fetch(url, {
       method: 'POST',
