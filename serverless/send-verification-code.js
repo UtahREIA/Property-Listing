@@ -41,27 +41,37 @@ module.exports = async (req, res) => {
       }
     }
 
-    // In production, send actual email here using SendGrid, AWS SES, etc.
-    // For now, we'll return the code in the response (REMOVE IN PRODUCTION!)
-    console.log(`Verification code for ${email}: ${code}`);
-
-    // TODO: Implement actual email sending
-    // Example with SendGrid:
-    // const sgMail = require('@sendgrid/mail');
-    // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    // await sgMail.send({
-    //   to: email,
-    //   from: 'noreply@yourdomain.com',
-    //   subject: 'Property Management Verification Code',
-    //   text: `Your verification code is: ${code}`,
-    //   html: `<p>Your verification code is: <strong>${code}</strong></p>`
-    // });
+    // Send email via GoHighLevel Workflow Webhook
+    const GHL_WEBHOOK_URL = process.env.GHL_VERIFICATION_WEBHOOK_URL;
+    
+    if (GHL_WEBHOOK_URL) {
+      try {
+        await fetch(GHL_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            verificationCode: code,
+            propertyId: propertyId
+          })
+        });
+        console.log(`Verification code sent to ${email} via GHL workflow`);
+      } catch (error) {
+        console.error('Error calling GHL webhook:', error);
+        // Continue anyway - code is still valid
+      }
+    } else {
+      // For testing without GHL webhook
+      console.log(`TEST MODE - Verification code for ${email}: ${code}`);
+    }
 
     return res.status(200).json({ 
       success: true,
       message: 'Verification code sent',
-      // REMOVE THIS IN PRODUCTION - only for testing:
-      code: code
+      // Return code for testing only when no GHL webhook configured
+      ...(GHL_WEBHOOK_URL ? {} : { code: code })
     });
 
   } catch (error) {
