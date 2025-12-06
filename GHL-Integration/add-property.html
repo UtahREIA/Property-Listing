@@ -368,10 +368,13 @@
       const yearBuilt = document.getElementById('yearBuilt').value;
       if (yearBuilt) propertyData['Year Built'] = parseInt(yearBuilt);
 
-      // Handle image URL
+      // Handle image URL - Airtable attachment format
       const imageUrl = document.getElementById('imageUrl').value;
       if (imageUrl) {
-        propertyData.Image = [{ url: imageUrl }];
+        // Airtable expects attachments as array of objects with 'url' property
+        propertyData.Image = [{
+          url: imageUrl.trim()
+        }];
       }
 
       const amenities = document.getElementById('amenities').value;
@@ -387,6 +390,9 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Adding Property...';
         showMessage('Adding your property listing...', 'info');
+
+        // Debug: Log what we're sending
+        console.log('Property data being sent:', propertyData);
 
         // Send to secure backend webhook
         const response = await fetch(API_CONFIG.addPropertyUrl, {
