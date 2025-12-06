@@ -50,7 +50,8 @@ module.exports = async (req, res) => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error?.message || 'Failed to add property');
+      console.error('Airtable API Error:', error);
+      throw new Error(JSON.stringify(error));
     }
 
     const data = await response.json();
@@ -63,9 +64,11 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Error adding property:', error);
+    console.error('Request body was:', req.body);
     return res.status(500).json({ 
       error: 'Failed to add property',
-      message: error.message 
+      message: error.message,
+      details: error.toString()
     });
   }
 };
