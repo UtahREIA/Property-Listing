@@ -46,6 +46,12 @@ module.exports = async (req, res) => {
 
     const data = await response.json();
     
+    // Debug: Log image data for first property
+    if (data.records && data.records.length > 0) {
+      console.log('Sample property Image field:', data.records[0].fields.Image);
+      console.log('Image field type:', typeof data.records[0].fields.Image);
+    }
+    
     // Return the properties
     return res.status(200).json(data);
 
