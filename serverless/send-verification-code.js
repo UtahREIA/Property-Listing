@@ -1,9 +1,40 @@
 // Serverless function to send verification codes via email using Gmail SMTP
-// Uses a simple in-memory store (for production, use Redis or database)
+// Uses filesystem for temporary storage (works across serverless functions)
 
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
-const verificationCodes = new Map();
+// Use /tmp directory for storing codes (persists for a short time in serverless)
+const CODES_FILE = '/tmp/verification-codes.json';
+
+function loadCodes() {
+  try {
+    if (fs.existsSync(CODES_FILE)) {
+      const data = fs.readFileSync(CODES_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Error loading codes:', error);
+  }
+  return {};
+}
+
+function saveCodes(codes) {
+  try {
+    // Clean up expired codes before saving
+    const now = Date.now();
+    const validCodes = {};
+    for (const [key, value] of Object.entries(codes)) {
+      if (value.expires > now) {
+        validCodes[key] = value;
+      }
+    }
+    fs.writeFileSync(CODES_FILE, JSON.stringify(validCodes), 'utf8');
+  } catch (error) {
+    console.error('Error saving codes:', error);
+  }
+}
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -31,17 +62,12 @@ module.exports = async (req, res) => {
     
     // Store code with 10-minute expiration
     const key = `${email}-${propertyId}`;
-    verificationCodes.set(key, {
+    const codes = loadCodes();
+    codes[key] = {
       code,
       expires: Date.now() + 10 * 60 * 1000 // 10 minutes
-    });
-
-    // Clean up expired codes
-    for (const [k, v] of verificationCodes.entries()) {
-      if (v.expires < Date.now()) {
-        verificationCodes.delete(k);
-      }
-    }
+    };
+    saveCodes(codes);
 
     // Send email via Gmail SMTP
     const GMAIL_USER = process.env.GMAIL_USER;

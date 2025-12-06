@@ -1,8 +1,31 @@
 // Serverless function to verify codes
-// Note: This uses in-memory storage - in production use Redis or database
+// Uses filesystem for temporary storage (shared with send-verification-code)
 
-// Import the same Map from send-verification-code (in production, use shared storage)
-const verificationCodes = new Map();
+const fs = require('fs');
+const path = require('path');
+
+// Use /tmp directory for storing codes (persists for a short time in serverless)
+const CODES_FILE = '/tmp/verification-codes.json';
+
+function loadCodes() {
+  try {
+    if (fs.existsSync(CODES_FILE)) {
+      const data = fs.readFileSync(CODES_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Error loading codes:', error);
+  }
+  return {};
+}
+
+function saveCodes(codes) {
+  try {
+    fs.writeFileSync(CODES_FILE, JSON.stringify(codes), 'utf8');
+  } catch (error) {
+    console.error('Error saving codes:', error);
+  }
+}
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -26,7 +49,8 @@ module.exports = async (req, res) => {
     }
 
     const key = `${email}-${propertyId}`;
-    const stored = verificationCodes.get(key);
+    const codes = loadCodes();
+    const stored = codes[key];
 
     if (!stored) {
       return res.status(400).json({ 
@@ -36,7 +60,8 @@ module.exports = async (req, res) => {
     }
 
     if (stored.expires < Date.now()) {
-      verificationCodes.delete(key);
+      delete codes[key];
+      saveCodes(codes);
       return res.status(400).json({ 
         success: false,
         error: 'Verification code expired. Please request a new one.' 
@@ -51,7 +76,8 @@ module.exports = async (req, res) => {
     }
 
     // Code is valid - delete it (one-time use)
-    verificationCodes.delete(key);
+    delete codes[key];
+    saveCodes(codes);
 
     return res.status(200).json({ 
       success: true,
