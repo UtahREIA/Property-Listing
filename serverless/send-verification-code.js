@@ -1,5 +1,6 @@
 // Serverless function to send verification codes via email using Gmail SMTP
 // Returns encoded verification token that can be validated
+// Updated: 2024-12-06
 
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
