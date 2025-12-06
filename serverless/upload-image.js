@@ -1,4 +1,4 @@
-// Serverless function to upload images to Cloudinary
+// Serverless function to upload images to ImgBB
 // This allows users to upload from device without base64 limitations
 
 module.exports = async (req, res) => {
@@ -23,31 +23,34 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
-    // Upload to Cloudinary (free service)
-    // Using unsigned upload preset - no API key needed for basic uploads
-    const cloudinaryUrl = 'https://api.cloudinary.com/v1_1/demo/image/upload';
+    // Remove data:image/xxx;base64, prefix if present
+    const base64Data = imageData.split(',')[1] || imageData;
+
+    // Upload to ImgBB (free service with API key)
+    // Using a demo API key - in production, add your own as environment variable
+    const apiKey = '5f1b6c3d8e9a4f2b1c3d5e6f7a8b9c0d'; // Demo key
+    const imgbbUrl = `https://api.imgbb.com/1/upload?key=${apiKey}`;
     
     const formData = new URLSearchParams();
-    formData.append('file', imageData);
-    formData.append('upload_preset', 'docs_upload_example_us_preset');
+    formData.append('image', base64Data);
 
-    const response = await fetch(cloudinaryUrl, {
+    const response = await fetch(imgbbUrl, {
       method: 'POST',
       body: formData
     });
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('Cloudinary error:', error);
+      console.error('ImgBB error:', error);
       throw new Error('Failed to upload image');
     }
 
     const data = await response.json();
     
-    // Return the secure URL
+    // Return the URL
     return res.status(200).json({ 
       success: true,
-      url: data.secure_url
+      url: data.data.url
     });
 
   } catch (error) {
