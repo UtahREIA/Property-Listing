@@ -1,39 +1,18 @@
 // Serverless function to send verification codes via email using Gmail SMTP
-// Uses filesystem for temporary storage (works across serverless functions)
+// Returns encoded verification token that can be validated
 
 const nodemailer = require('nodemailer');
-const fs = require('fs');
-const path = require('path');
+const crypto = require('crypto');
 
-// Use /tmp directory for storing codes (persists for a short time in serverless)
-const CODES_FILE = '/tmp/verification-codes.json';
+// Secret for hashing (in production, use environment variable)
+const SECRET = process.env.VERIFICATION_SECRET || 'your-secret-key-change-in-production';
 
-function loadCodes() {
-  try {
-    if (fs.existsSync(CODES_FILE)) {
-      const data = fs.readFileSync(CODES_FILE, 'utf8');
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error('Error loading codes:', error);
-  }
-  return {};
-}
-
-function saveCodes(codes) {
-  try {
-    // Clean up expired codes before saving
-    const now = Date.now();
-    const validCodes = {};
-    for (const [key, value] of Object.entries(codes)) {
-      if (value.expires > now) {
-        validCodes[key] = value;
-      }
-    }
-    fs.writeFileSync(CODES_FILE, JSON.stringify(validCodes), 'utf8');
-  } catch (error) {
-    console.error('Error saving codes:', error);
-  }
+function createVerificationToken(email, propertyId, code, expires) {
+  // Create a hash that includes all the data
+  const data = `${email}|${propertyId}|${code}|${expires}`;
+  const hash = crypto.createHmac('sha256', SECRET).update(data).digest('hex');
+  // Return base64 encoded token
+  return Buffer.from(`${data}|${hash}`).toString('base64');
 }
 
 module.exports = async (req, res) => {
@@ -59,15 +38,10 @@ module.exports = async (req, res) => {
 
     // Generate 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = Date.now() + 10 * 60 * 1000; // 10 minutes
     
-    // Store code with 10-minute expiration
-    const key = `${email}-${propertyId}`;
-    const codes = loadCodes();
-    codes[key] = {
-      code,
-      expires: Date.now() + 10 * 60 * 1000 // 10 minutes
-    };
-    saveCodes(codes);
+    // Create verification token
+    const token = createVerificationToken(email, propertyId, code, expires);
 
     // Send email via Gmail SMTP
     const GMAIL_USER = process.env.GMAIL_USER;
@@ -123,16 +97,18 @@ module.exports = async (req, res) => {
         
         return res.status(200).json({ 
           success: true,
-          message: 'Verification code sent to your email'
+          message: 'Verification code sent to your email',
+          token: token // Return token for verification
         });
       } catch (error) {
         console.error('Error sending email via Gmail:', error);
-        // Still return success since code is stored, but log the error
+        // Still return success since code is generated
         return res.status(200).json({ 
           success: true,
           message: 'Verification code generated',
           warning: 'Email sending failed, but code is stored',
-          code: code // Return code when email fails
+          token: token,
+          code: code // Return code when email fails for debugging
         });
       }
     } else {
@@ -141,6 +117,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({ 
         success: true,
         message: 'Verification code generated (test mode)',
+        token: token,
         code: code // Return code in test mode only
       });
     }

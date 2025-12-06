@@ -872,6 +872,7 @@
     let currentPropertyEmail = null;
     let currentAction = null; // 'update' or 'delete'
     let isVerified = false;
+    let verificationToken = null; // Store token for verification
 
     // Email Verification Functions
     function openVerificationModal(propertyId, propertyEmail, action) {
@@ -927,6 +928,9 @@
         const data = await response.json();
 
         if (response.ok && data.success) {
+          // Store the verification token
+          verificationToken = data.token;
+          
           document.getElementById('emailStep').style.display = 'none';
           document.getElementById('codeStep').style.display = 'block';
           
@@ -967,7 +971,8 @@
           body: JSON.stringify({
             email: email,
             propertyId: currentPropertyId,
-            code: code
+            code: code,
+            token: verificationToken
           })
         });
 

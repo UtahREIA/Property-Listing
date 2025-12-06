@@ -1,29 +1,44 @@
-// Serverless function to verify codes
-// Uses filesystem for temporary storage (shared with send-verification-code)
+// Serverless function to verify codes using token-based verification
 
-const fs = require('fs');
-const path = require('path');
+const crypto = require('crypto');
 
-// Use /tmp directory for storing codes (persists for a short time in serverless)
-const CODES_FILE = '/tmp/verification-codes.json';
+// Secret for hashing (must match send-verification-code)
+const SECRET = process.env.VERIFICATION_SECRET || 'your-secret-key-change-in-production';
 
-function loadCodes() {
+function verifyToken(token, email, propertyId, code) {
   try {
-    if (fs.existsSync(CODES_FILE)) {
-      const data = fs.readFileSync(CODES_FILE, 'utf8');
-      return JSON.parse(data);
+    // Decode the token
+    const decoded = Buffer.from(token, 'base64').toString('utf8');
+    const parts = decoded.split('|');
+    
+    if (parts.length !== 5) {
+      return { valid: false, error: 'Invalid token format' };
     }
+    
+    const [tokenEmail, tokenPropertyId, tokenCode, tokenExpires, tokenHash] = parts;
+    
+    // Verify the hash
+    const data = `${tokenEmail}|${tokenPropertyId}|${tokenCode}|${tokenExpires}`;
+    const expectedHash = crypto.createHmac('sha256', SECRET).update(data).digest('hex');
+    
+    if (tokenHash !== expectedHash) {
+      return { valid: false, error: 'Invalid token signature' };
+    }
+    
+    // Check expiration
+    if (Date.now() > parseInt(tokenExpires)) {
+      return { valid: false, error: 'Verification code expired' };
+    }
+    
+    // Verify the data matches
+    if (tokenEmail !== email || tokenPropertyId !== propertyId || tokenCode !== code) {
+      return { valid: false, error: 'Invalid verification code' };
+    }
+    
+    return { valid: true };
   } catch (error) {
-    console.error('Error loading codes:', error);
-  }
-  return {};
-}
-
-function saveCodes(codes) {
-  try {
-    fs.writeFileSync(CODES_FILE, JSON.stringify(codes), 'utf8');
-  } catch (error) {
-    console.error('Error saving codes:', error);
+    console.error('Error verifying token:', error);
+    return { valid: false, error: 'Token verification failed' };
   }
 }
 
@@ -42,42 +57,24 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { email, propertyId, code } = req.body;
+    const { email, propertyId, code, token } = req.body;
 
-    if (!email || !propertyId || !code) {
-      return res.status(400).json({ error: 'Email, property ID, and code required' });
-    }
-
-    const key = `${email}-${propertyId}`;
-    const codes = loadCodes();
-    const stored = codes[key];
-
-    if (!stored) {
+    if (!email || !propertyId || !code || !token) {
       return res.status(400).json({ 
         success: false,
-        error: 'No verification code found. Please request a new one.' 
+        error: 'Email, property ID, code, and token required' 
       });
     }
 
-    if (stored.expires < Date.now()) {
-      delete codes[key];
-      saveCodes(codes);
+    // Verify the token
+    const result = verifyToken(token, email, propertyId, code);
+    
+    if (!result.valid) {
       return res.status(400).json({ 
         success: false,
-        error: 'Verification code expired. Please request a new one.' 
+        error: result.error 
       });
     }
-
-    if (stored.code !== code) {
-      return res.status(400).json({ 
-        success: false,
-        error: 'Invalid verification code' 
-      });
-    }
-
-    // Code is valid - delete it (one-time use)
-    delete codes[key];
-    saveCodes(codes);
 
     return res.status(200).json({ 
       success: true,
