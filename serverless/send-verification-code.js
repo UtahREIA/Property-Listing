@@ -1,5 +1,7 @@
-// Serverless function to send verification codes via email
+// Serverless function to send verification codes via email using Gmail SMTP
 // Uses a simple in-memory store (for production, use Redis or database)
+
+const nodemailer = require('nodemailer');
 
 const verificationCodes = new Map();
 
@@ -41,37 +43,77 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Send email via GoHighLevel Workflow Webhook
-    const GHL_WEBHOOK_URL = process.env.GHL_VERIFICATION_WEBHOOK_URL;
+    // Send email via Gmail SMTP
+    const GMAIL_USER = process.env.GMAIL_USER;
+    const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
     
-    if (GHL_WEBHOOK_URL) {
+    if (GMAIL_USER && GMAIL_APP_PASSWORD) {
       try {
-        await fetch(GHL_WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: email,
-            verificationCode: code,
-            propertyId: propertyId
-          })
+        // Create transporter with Gmail SMTP
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: GMAIL_USER,
+            pass: GMAIL_APP_PASSWORD
+          }
         });
-        console.log(`Verification code sent to ${email} via GHL workflow`);
+
+        // Email content
+        const mailOptions = {
+          from: `"Property Listing" <${GMAIL_USER}>`,
+          to: email,
+          subject: 'Property Management - Email Verification Code',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="color: white; margin: 0;">🔐 Email Verification</h1>
+              </div>
+              <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
+                <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+                  You requested to manage a property. Please use the verification code below:
+                </p>
+                <div style="background: white; padding: 20px; text-align: center; border-radius: 8px; margin: 25px 0;">
+                  <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #2563eb;">
+                    ${code}
+                  </div>
+                </div>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 20px;">
+                  This code will expire in 10 minutes.
+                </p>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 10px;">
+                  If you didn't request this code, please ignore this email.
+                </p>
+              </div>
+              <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+                Property Listing Management System
+              </div>
+            </div>
+          `
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+        console.log(`Verification code sent to ${email} via Gmail SMTP`);
       } catch (error) {
-        console.error('Error calling GHL webhook:', error);
-        // Continue anyway - code is still valid
+        console.error('Error sending email via Gmail:', error);
+        return res.status(500).json({ 
+          error: 'Failed to send email',
+          message: error.message 
+        });
       }
     } else {
-      // For testing without GHL webhook
+      // For testing without Gmail credentials
       console.log(`TEST MODE - Verification code for ${email}: ${code}`);
+      return res.status(200).json({ 
+        success: true,
+        message: 'Verification code generated (test mode)',
+        code: code // Return code in test mode only
+      });
     }
 
     return res.status(200).json({ 
       success: true,
-      message: 'Verification code sent',
-      // Return code for testing only when no GHL webhook configured
-      ...(GHL_WEBHOOK_URL ? {} : { code: code })
+      message: 'Verification code sent to your email'
     });
 
   } catch (error) {
