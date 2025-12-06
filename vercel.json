@@ -22,6 +22,10 @@
     {
       "src": "/api/delete-property",
       "dest": "serverless/delete-property.js"
+    },
+    {
+      "src": "/api/upload-image",
+      "dest": "serverless/upload-image.js"
     }
   ]
 }

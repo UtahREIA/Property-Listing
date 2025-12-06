@@ -310,7 +310,7 @@
           <div class="form-group">
             <label>Property Image</label>
             <input type="file" id="imageFile" accept="image/*">
-            <small>Upload a high-quality image of your property (JPG, PNG, or WEBP)</small>
+            <small>Upload a high-quality image of your property (JPG, PNG, or WEBP, max 5MB)</small>
             <div id="imagePreview" style="margin-top: 15px; display: none;">
               <img id="previewImg" style="max-width: 100%; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" alt="Preview">
               <button type="button" onclick="removeImage()" style="display: block; margin-top: 10px; background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">Remove Image</button>
@@ -341,6 +341,7 @@
     // API Configuration - Replace with your deployed webhook URL
     const API_CONFIG = {
       addPropertyUrl: 'https://property-listing-32ax.vercel.app/api/add-property',
+      uploadImageUrl: 'https://property-listing-32ax.vercel.app/api/upload-image',
     };
 
     // Image Preview Functionality
@@ -361,10 +362,7 @@
         reader.onload = function(event) {
           document.getElementById('previewImg').src = event.target.result;
           document.getElementById('imagePreview').style.display = 'block';
-          uploadedImageData = {
-            filename: file.name,
-            data: event.target.result
-          };
+          uploadedImageData = event.target.result;
         };
         reader.readAsDataURL(file);
       }
@@ -408,16 +406,32 @@
       const yearBuilt = document.getElementById('yearBuilt').value;
       if (yearBuilt) propertyData['Year Built'] = parseInt(yearBuilt);
 
-      // Handle image - prioritize uploaded file over URL
+      // Handle image - upload file first if provided
       if (uploadedImageData) {
-        // Upload file as Airtable attachment
-        propertyData.Image = [{
-          filename: uploadedImageData.filename,
-          url: uploadedImageData.data
-        }];
+        showMessage('Uploading image...', 'info');
+        
+        try {
+          const uploadResponse = await fetch(API_CONFIG.uploadImageUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageData: uploadedImageData })
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error('Failed to upload image');
+          }
+
+          const uploadData = await uploadResponse.json();
+          propertyData.Image = [{ url: uploadData.url }];
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          throw new Error('Failed to upload image. Please try with an image URL instead.');
+        }
       } else {
         const imageUrl = document.getElementById('imageUrl').value;
-        if (imageUrl) propertyData.Image = [{ url: imageUrl }];
+        if (imageUrl) {
+          propertyData.Image = [{ url: imageUrl }];
+        }
       }
 
       const amenities = document.getElementById('amenities').value;
@@ -452,7 +466,7 @@
         // Success!
         showMessage('🎉 Property added successfully! Redirecting to home page...', 'success');
         document.getElementById('addPropertyForm').reset();
-        removeImage(); // Clear image preview
+        removeImage();
 
         // Redirect to home page after 2 seconds
         setTimeout(() => {
