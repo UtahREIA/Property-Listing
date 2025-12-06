@@ -929,11 +929,14 @@
         if (response.ok && data.success) {
           document.getElementById('emailStep').style.display = 'none';
           document.getElementById('codeStep').style.display = 'block';
-          showVerifyMessage('Verification code sent! Check your email.', 'success');
           
-          // FOR TESTING ONLY - Remove in production
+          // Display code in console for testing
           if (data.code) {
-            console.log('TEST MODE - Verification code:', data.code);
+            console.log('🔐 VERIFICATION CODE:', data.code);
+            console.log('Email sending may have failed. Use the code above to verify.');
+            showVerifyMessage(`Code sent! ${data.warning ? 'Check console for code.' : 'Check your email.'}`, 'success');
+          } else {
+            showVerifyMessage('Verification code sent! Check your email.', 'success');
           }
         } else {
           showVerifyMessage(data.error || 'Failed to send code', 'error');
