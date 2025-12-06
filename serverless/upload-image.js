@@ -36,17 +36,25 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
-    // Upload to Cloudinary using their upload API
+    // Create signature for authenticated upload
+    const crypto = require('crypto');
+    const timestamp = Math.round(Date.now() / 1000);
+    
+    // Generate signature
+    const stringToSign = `timestamp=${timestamp}${CLOUDINARY_API_SECRET}`;
+    const signature = crypto
+      .createHash('sha1')
+      .update(stringToSign)
+      .digest('hex');
+
+    // Upload to Cloudinary using authenticated upload
     const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
     
     const formData = new URLSearchParams();
     formData.append('file', imageData);
-    formData.append('upload_preset', 'ml_default'); // Use unsigned preset
-    formData.append('api_key', CLOUDINARY_API_KEY);
-    
-    // Add timestamp and signature for security
-    const timestamp = Math.round(Date.now() / 1000);
     formData.append('timestamp', timestamp.toString());
+    formData.append('api_key', CLOUDINARY_API_KEY);
+    formData.append('signature', signature);
 
     console.log('Uploading to Cloudinary...');
     
