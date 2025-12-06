@@ -1,5 +1,9 @@
-// Serverless function to upload images to ImgBB
-// This allows users to upload from device without base64 limitations
+// Serverless function to upload images to Cloudinary
+// Allows users to upload from their device seamlessly
+
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
+const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -17,40 +21,53 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Check environment variables
+    if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
+      console.error('Missing Cloudinary credentials');
+      return res.status(500).json({ 
+        error: 'Server configuration error',
+        message: 'Cloudinary credentials not configured'
+      });
+    }
+
     const { imageData } = req.body;
 
     if (!imageData) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
-    // Remove data:image/xxx;base64, prefix if present
-    const base64Data = imageData.split(',')[1] || imageData;
-
-    // Upload to ImgBB (free service with API key)
-    // Using a demo API key - in production, add your own as environment variable
-    const apiKey = '5f1b6c3d8e9a4f2b1c3d5e6f7a8b9c0d'; // Demo key
-    const imgbbUrl = `https://api.imgbb.com/1/upload?key=${apiKey}`;
+    // Upload to Cloudinary using their upload API
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
     
     const formData = new URLSearchParams();
-    formData.append('image', base64Data);
+    formData.append('file', imageData);
+    formData.append('upload_preset', 'ml_default'); // Use unsigned preset
+    formData.append('api_key', CLOUDINARY_API_KEY);
+    
+    // Add timestamp and signature for security
+    const timestamp = Math.round(Date.now() / 1000);
+    formData.append('timestamp', timestamp.toString());
 
-    const response = await fetch(imgbbUrl, {
+    console.log('Uploading to Cloudinary...');
+    
+    const response = await fetch(cloudinaryUrl, {
       method: 'POST',
       body: formData
     });
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('ImgBB error:', error);
-      throw new Error('Failed to upload image');
+      console.error('Cloudinary error:', error);
+      throw new Error(error.error?.message || 'Failed to upload to Cloudinary');
     }
 
     const data = await response.json();
+    console.log('Upload successful:', data.secure_url);
     
-    // Return the URL
+    // Return the secure URL
     return res.status(200).json({ 
       success: true,
-      url: data.data.url
+      url: data.secure_url
     });
 
   } catch (error) {

@@ -308,12 +308,14 @@
           </div>
 
           <div class="form-group">
-            <label>Property Image URL *</label>
-            <input type="url" id="imageUrl" placeholder="https://i.imgur.com/abc123.jpg" required>
-            <small>⚠️ Must be a <strong>direct image link</strong> ending in .jpg, .png, etc. 
-            <br>• <strong>Imgur:</strong> Right-click image → "Copy image address" (must start with <code>i.imgur.com</code>)
-            <br>• <strong>ImgBB:</strong> Use the "Direct link" option (recommended)
-            <br>• Upload to <a href="https://imgbb.com/" target="_blank" style="color: #2563eb; text-decoration: underline;">ImgBB</a> or <a href="https://imgur.com/upload" target="_blank" style="color: #2563eb; text-decoration: underline;">Imgur</a></small>
+            <label>Property Image *</label>
+            <input type="file" id="propertyImage" accept="image/*" required>
+            <small>Select an image from your device (JPG, PNG, etc.). Maximum size: 10MB</small>
+          </div>
+
+          <div id="imagePreview" style="display: none; margin-top: 15px; text-align: center;">
+            <img id="previewImg" style="max-width: 100%; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <button type="button" onclick="removeImage()" style="display: block; margin: 10px auto; padding: 8px 16px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">Remove Image</button>
           </div>
 
           <div class="form-group">
@@ -337,7 +339,34 @@
       uploadImageUrl: 'https://property-listing-32ax.vercel.app/api/upload-image',
     };
 
-    // Image handling simplified - users provide URL directly
+    // Image preview and handling
+    let uploadedImageUrl = null;
+
+    document.getElementById('propertyImage').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Validate file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+          alert('Image size must be less than 10MB');
+          e.target.value = '';
+          return;
+        }
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          document.getElementById('previewImg').src = event.target.result;
+          document.getElementById('imagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function removeImage() {
+      document.getElementById('propertyImage').value = '';
+      document.getElementById('imagePreview').style.display = 'none';
+      uploadedImageUrl = null;
+    }
 
     document.getElementById('addPropertyForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -345,59 +374,81 @@
       const submitBtn = document.getElementById('submitBtn');
       const messageEl = document.getElementById('message');
 
-      // Collect form data
-      const propertyData = {
-        Title: document.getElementById('title').value,
-        'Property Type': document.getElementById('propertyType').value,
-        Price: parseFloat(document.getElementById('price').value),
-        Location: document.getElementById('location').value,
-        Status: document.getElementById('status').value,
-        Description: document.getElementById('description').value,
-        "Contact's Name": document.getElementById('agentName').value,
-        "Contact's Email": document.getElementById('agentEmail').value,
-        "Contact's Phone Number": document.getElementById('agentPhone').value
-      };
-
-      // Add optional fields if they have values
-      const bedrooms = document.getElementById('bedrooms').value;
-      if (bedrooms) propertyData.Bedrooms = parseInt(bedrooms);
-
-      const bathrooms = document.getElementById('bathrooms').value;
-      if (bathrooms) propertyData.Bathrooms = parseFloat(bathrooms);
-
-      const squareFeet = document.getElementById('squareFeet').value;
-      if (squareFeet) propertyData['Square Feet'] = parseInt(squareFeet);
-
-      const yearBuilt = document.getElementById('yearBuilt').value;
-      if (yearBuilt) propertyData['Year Built'] = parseInt(yearBuilt);
-
-      // Handle image URL - Airtable attachment format
-      const imageUrl = document.getElementById('imageUrl').value;
-      if (imageUrl) {
-        // Airtable expects attachments as array of objects with 'url' property
-        propertyData.Image = [{
-          url: imageUrl.trim()
-        }];
+      // Check if image is selected
+      const imageFile = document.getElementById('propertyImage').files[0];
+      if (!imageFile) {
+        showMessage('Please select an image', 'error');
+        return;
       }
 
-      const amenities = document.getElementById('amenities').value;
-      if (amenities) propertyData.Amenities = amenities;
-
       try {
-        // Check if webhook URL is configured
-        if (API_CONFIG.addPropertyUrl === 'YOUR_ADD_PROPERTY_WEBHOOK_URL') {
-          throw new Error('⚠️ Please configure your webhook URL in the code');
-        }
-
         // Disable button and show loading
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Adding Property...';
-        showMessage('Adding your property listing...', 'info');
+        submitBtn.textContent = 'Uploading Image...';
+        showMessage('Uploading image...', 'info');
 
-        // Debug: Log what we're sending
+        // Step 1: Upload image to Cloudinary
+        const reader = new FileReader();
+        reader.readAsDataURL(imageFile);
+        
+        const imageData = await new Promise((resolve, reject) => {
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+        });
+
+        console.log('Uploading image to Cloudinary...');
+        const uploadResponse = await fetch(API_CONFIG.uploadImageUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ imageData })
+        });
+
+        if (!uploadResponse.ok) {
+          const error = await uploadResponse.json();
+          throw new Error(error.message || 'Failed to upload image');
+        }
+
+        const uploadResult = await uploadResponse.json();
+        console.log('Image uploaded successfully:', uploadResult.url);
+        
+        // Step 2: Collect form data with uploaded image URL
+        submitBtn.textContent = 'Adding Property...';
+        showMessage('Saving property details...', 'info');
+
+        const propertyData = {
+          Title: document.getElementById('title').value,
+          'Property Type': document.getElementById('propertyType').value,
+          Price: parseFloat(document.getElementById('price').value),
+          Location: document.getElementById('location').value,
+          Status: document.getElementById('status').value,
+          Description: document.getElementById('description').value,
+          "Contact's Name": document.getElementById('agentName').value,
+          "Contact's Email": document.getElementById('agentEmail').value,
+          "Contact's Phone Number": document.getElementById('agentPhone').value,
+          Image: [{ url: uploadResult.url }]
+        };
+
+        // Add optional fields
+        const bedrooms = document.getElementById('bedrooms').value;
+        if (bedrooms) propertyData.Bedrooms = parseInt(bedrooms);
+
+        const bathrooms = document.getElementById('bathrooms').value;
+        if (bathrooms) propertyData.Bathrooms = parseFloat(bathrooms);
+
+        const squareFeet = document.getElementById('squareFeet').value;
+        if (squareFeet) propertyData['Square Feet'] = parseInt(squareFeet);
+
+        const yearBuilt = document.getElementById('yearBuilt').value;
+        if (yearBuilt) propertyData['Year Built'] = parseInt(yearBuilt);
+
+        const amenities = document.getElementById('amenities').value;
+        if (amenities) propertyData.Amenities = amenities;
+
         console.log('Property data being sent:', propertyData);
 
-        // Send to secure backend webhook
+        // Step 3: Send to Airtable
         const response = await fetch(API_CONFIG.addPropertyUrl, {
           method: 'POST',
           headers: {
