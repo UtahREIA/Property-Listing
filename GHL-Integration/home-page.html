@@ -140,6 +140,24 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s, box-shadow 0.3s;
       cursor: pointer;
+      position: relative;
+    }
+
+    .property-id-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #6b7280;
+      font-family: monospace;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+      letter-spacing: 0.5px;
     }
 
     .property-card:hover {
@@ -664,6 +682,7 @@
           
           return `
             <div class="property-card" onclick="viewProperty('${property.id}')">
+              <div class="property-id-badge">ID: ${property.id.substring(3, 10)}</div>
               <img src="${imageUrl}" 
                    alt="${property.Title || 'Property'}" 
                    class="property-image"
@@ -671,7 +690,6 @@
                    onerror="this.src='https://via.placeholder.com/400x300/e5e7eb/6b7280?text=No+Image'">
               <div class="property-content">
                 <div class="property-title">${property.Title || 'Untitled Property'}</div>
-                <div style="font-size: 12px; color: #9ca3af; margin-bottom: 8px; font-family: monospace;">Property ID: ${property.id}</div>
                 <div class="property-location">
                   📍 ${property.Location || 'Location not specified'}
                 </div>
@@ -733,6 +751,7 @@
              onerror="this.src='https://via.placeholder.com/800x400/e5e7eb/6b7280?text=No+Image'">
         
         <div class="modal-body">
+          <div style="display: inline-block; background: #f3f4f6; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; color: #6b7280; font-family: monospace; margin-bottom: 15px;">Property ID: ${property.id}</div>
           <div class="modal-title">${property.Title || 'Untitled Property'}</div>
           <div class="modal-price">${formatPrice(property.Price)}</div>
           <div class="modal-location">📍 ${property.Location || 'Location not specified'}</div>
