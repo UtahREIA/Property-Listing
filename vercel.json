@@ -29,7 +29,7 @@
     },
     {
       "src": "/api/send-verification-code",
-      "dest": "serverless/send-verification-code.js"
+      "dest": "serverless/send-verification-code-v2.js"
     },
     {
       "src": "/api/verify-code",
