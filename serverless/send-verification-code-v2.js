@@ -109,36 +109,28 @@ module.exports = async (req, res) => {
         // Send email
         const info = await transporter.sendMail(mailOptions);
         console.log(`✅ Verification code sent to ${email} via Gmail SMTP. MessageId: ${info.messageId}`);
-        console.log(`🔐 Code: ${code} (for debugging)`);
         
         return res.status(200).json({ 
           success: true,
           message: 'Verification code sent to your email',
-          token: token,
-          code: code // ALWAYS return code for debugging
+          token: token
         });
       } catch (error) {
         console.error('❌ Error sending email via Gmail:', error.message);
         console.error('Full error:', error);
-        // Still return success since code is generated
-        return res.status(200).json({ 
-          success: true,
-          message: 'Verification code generated',
-          warning: 'Email sending failed, but code is stored',
-          token: token,
-          code: code,
-          emailError: error.message
+        // Email failed - return error
+        return res.status(500).json({ 
+          success: false,
+          error: 'Failed to send verification email. Please try again.',
+          message: error.message
         });
       }
     } else {
-      // For testing without Gmail credentials
-      console.log(`⚠️ TEST MODE - No Gmail credentials found`);
-      console.log(`🔐 Verification code for ${email}: ${code}`);
-      return res.status(200).json({ 
-        success: true,
-        message: 'Verification code generated (test mode - no email credentials)',
-        token: token,
-        code: code
+      // No Gmail credentials configured
+      console.log(`⚠️ ERROR - No Gmail credentials found`);
+      return res.status(500).json({ 
+        success: false,
+        error: 'Email service not configured. Please contact support.'
       });
     }
 
