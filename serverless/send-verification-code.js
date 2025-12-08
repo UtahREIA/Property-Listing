@@ -1,12 +1,14 @@
 // Serverless function to send verification codes via email using Gmail SMTP
 // Returns encoded verification token that can be validated
-// Updated: 2024-12-06
+// Updated: 2025-12-08 - Force rebuild
 
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
 // Secret for hashing (in production, use environment variable)
 const SECRET = process.env.VERIFICATION_SECRET || 'your-secret-key-change-in-production';
+
+console.log('🚀 Send verification code function loaded - Version 2025-12-08');
 
 function createVerificationToken(email, propertyId, code, expires) {
   // Create a hash that includes all the data
@@ -30,7 +32,8 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  console.log('🔔 Send verification code endpoint called');
+  console.log('🔔 Send verification code endpoint called - NEW VERSION');
+  console.log('🔔 Timestamp:', new Date().toISOString());
   
   try {
     const { email, propertyId } = req.body;
