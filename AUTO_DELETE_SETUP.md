@@ -1,6 +1,7 @@
 # Auto-Delete Property System Setup
 
 ## Overview
+
 Properties are automatically deleted after **90 days** from creation. Contacts receive an email warning **14 days (2 weeks)** before deletion.
 
 ## Setup Steps
@@ -38,6 +39,7 @@ git push origin main
 ```
 
 Vercel will automatically:
+
 - Deploy the new serverless function
 - Set up the cron job to run daily at 2 AM UTC
 
@@ -54,12 +56,14 @@ After deployment:
 ## How It Works
 
 ### Daily Schedule
+
 - **Time:** 2:00 AM UTC (6:00 PM MST / 7:00 PM MDT)
 - **Frequency:** Once per day
 
 ### Email Notifications
 
 #### Warning Email (14 days before expiration)
+
 - Sent to Contact's Email
 - Subject: "⚠️ Property Listing Expiring Soon"
 - Contains:
@@ -69,6 +73,7 @@ After deployment:
   - Link to view listings
 
 #### Deletion Email (on expiration day)
+
 - Sent to Contact's Email
 - Subject: "🏠 Property Listing Expired"
 - Contains:
@@ -79,10 +84,12 @@ After deployment:
 ### Expiration Rules
 
 1. **Property Age Check**
+
    - Calculated from `createdTime` in Airtable
    - Current setting: 90 days
 
 2. **Warning Email**
+
    - Sent when property is 76 days old (90 - 14 days)
    - Only sent once (tracked in `Expiration Warning Sent` field)
    - Requires valid Contact's Email
@@ -98,11 +105,12 @@ You can adjust the expiration period by editing `serverless/check-property-expir
 
 ```javascript
 // Change these values at the top of the file:
-const EXPIRATION_DAYS = 90;   // Properties expire after X days
-const WARNING_DAYS = 14;      // Send warning X days before expiration
+const EXPIRATION_DAYS = 90; // Properties expire after X days
+const WARNING_DAYS = 14; // Send warning X days before expiration
 ```
 
 After making changes, redeploy:
+
 ```bash
 git add .
 git commit -m "Update expiration settings"
@@ -112,6 +120,7 @@ git push origin main
 ## Testing the Cron Job
 
 ### Manual Test (Development)
+
 You can manually trigger the cron job for testing:
 
 ```bash
@@ -122,6 +131,7 @@ curl -X GET https://property-listing-32ax.vercel.app/api/check-property-expirati
 Replace `YOUR_CRON_SECRET` with your actual secret from Vercel environment variables.
 
 ### Expected Response
+
 ```json
 {
   "success": true,
@@ -138,7 +148,9 @@ Replace `YOUR_CRON_SECRET` with your actual secret from Vercel environment varia
 ## Monitoring
 
 ### Vercel Logs
+
 View cron job execution logs:
+
 1. Go to: https://vercel.com/utahreia/property-listing/logs
 2. Filter by function: `check-property-expiration`
 3. Check for:
@@ -147,6 +159,7 @@ View cron job execution logs:
    - Any errors
 
 ### Email Deliverability
+
 - Warning and deletion emails are sent via Gmail SMTP
 - Uses the same credentials as verification emails
 - Check spam folders if contacts report not receiving emails
@@ -154,23 +167,27 @@ View cron job execution logs:
 ## Troubleshooting
 
 ### Cron Job Not Running
+
 1. Verify cron is active in Vercel dashboard
 2. Check Vercel logs for errors
 3. Ensure `CRON_SECRET` environment variable is set
 4. Verify you're on a Vercel Pro plan (cron jobs require Pro)
 
 ### Emails Not Sending
+
 1. Check Gmail credentials are still valid
 2. Verify `GMAIL_USER` and `GMAIL_APP_PASSWORD` in Vercel
 3. Check Vercel logs for SMTP errors
 4. Ensure Contact's Email field is populated in Airtable
 
 ### Warning Field Not Updating
+
 1. Verify `Expiration Warning Sent` checkbox field exists in Airtable
 2. Check field name matches exactly (case-sensitive)
 3. Check Airtable API permissions
 
 ### Properties Not Being Deleted
+
 1. Check property `createdTime` in Airtable
 2. Verify calculation: current date - createdTime >= 90 days
 3. Check Vercel logs for deletion errors
@@ -187,5 +204,6 @@ View cron job execution logs:
 ## Contact Support
 
 If you need to adjust the expiration period or encounter issues, the configuration is in:
+
 - `serverless/check-property-expiration.js` (main logic)
 - `vercel.json` (cron schedule)

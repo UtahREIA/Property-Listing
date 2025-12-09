@@ -39,11 +39,5 @@
       "src": "/api/check-property-expiration",
       "dest": "serverless/check-property-expiration.js"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/check-property-expiration",
-      "schedule": "0 2 * * *"
-    }
   ]
 }
