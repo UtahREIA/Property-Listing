@@ -270,13 +270,16 @@
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.7);
-      overflow-y: scroll !important;
+      overflow-y: auto !important;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
     }
 
     .modal.active {
-      display: block !important;
+      display: flex !important;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px 0;
     }
 
     .modal-content {
@@ -288,6 +291,11 @@
       animation: slideIn 0.3s ease;
       margin: 40px auto;
       min-height: 200px;
+    }
+
+    /* Verification modal should be centered vertically */
+    #verificationModal.active {
+      align-items: center;
     }
 
     @keyframes slideIn {
@@ -1124,6 +1132,13 @@
       isVerified = false;
       
       resetVerificationModal();
+      
+      // Scroll to top BEFORE showing modal
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.body.scrollTop = 0; // For Safari
+      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+      
+      // Then show the modal
       document.getElementById('verificationModal').classList.add('active');
       document.getElementById('verificationModal').scrollTop = 0;
       
