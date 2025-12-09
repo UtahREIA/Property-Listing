@@ -279,7 +279,7 @@
       display: flex !important;
       align-items: flex-start;
       justify-content: center;
-      padding: 20px 0;
+      padding: 20px;
     }
 
     .modal-content {
@@ -289,13 +289,25 @@
       width: 90%;
       position: relative;
       animation: slideIn 0.3s ease;
-      margin: 40px auto;
+      margin: 0 auto;
       min-height: 200px;
     }
 
-    /* Verification modal should be centered vertically */
+    /* Verification modal should be centered vertically in viewport */
+    #verificationModal {
+      display: none;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
     #verificationModal.active {
-      align-items: center;
+      display: flex !important;
+    }
+
+    #verificationModal .modal-content {
+      margin: auto;
+      position: sticky;
+      top: 20px;
     }
 
     @keyframes slideIn {
