@@ -595,7 +595,7 @@
     <p>Discover the perfect home from our curated collection of premium properties</p>
     <div class="hero-buttons">
       <a href="#properties" class="btn btn-primary">Browse Properties</a>
-      <a href="add-property.html" class="btn btn-secondary">List Your Property</a>
+      <a href="https://utahreia.org/add-property-page" class="btn btn-secondary">List Your Property</a>
     </div>
   </section>
 
@@ -873,8 +873,8 @@
           `).join('')}
           
           ${propertyImages.length > 1 ? `
-            <button class="image-nav-btn prev" onclick="navigateImage(-1)">‹</button>
-            <button class="image-nav-btn next" onclick="navigateImage(1)">›</button>
+            <button class="image-nav-btn prev" data-nav="-1">‹</button>
+            <button class="image-nav-btn next" data-nav="1">›</button>
             <div class="image-counter">
               <span id="currentImageNum">1</span> / ${propertyImages.length}
             </div>
@@ -884,7 +884,7 @@
         ${propertyImages.length > 1 ? `
           <div class="image-thumbnails">
             ${propertyImages.map((url, index) => `
-              <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="goToImage(${index})" data-index="${index}">
+              <div class="thumbnail ${index === 0 ? 'active' : ''}" data-thumb-index="${index}">
                 <img src="${url}" alt="Thumbnail ${index + 1}">
               </div>
             `).join('')}
@@ -974,7 +974,33 @@
             openVerificationModal(propertyId, contactEmail, 'delete');
           });
         }
+
+        // Attach image navigation event listeners
+        const prevBtn = document.querySelector('.image-nav-btn.prev');
+        const nextBtn = document.querySelector('.image-nav-btn.next');
+        
+        if (prevBtn) {
+          prevBtn.addEventListener('click', function() {
+            navigateImage(-1);
+          });
+        }
+        
+        if (nextBtn) {
+          nextBtn.addEventListener('click', function() {
+            navigateImage(1);
+          });
+        }
+
+        // Attach thumbnail click listeners
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        thumbnails.forEach(function(thumb) {
+          thumb.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-thumb-index'));
+            goToImage(index);
+          });
+        });
       }, 100);
+      
       const modal = document.getElementById('propertyModal');
       
       // Show modal
