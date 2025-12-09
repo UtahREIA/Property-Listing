@@ -3,13 +3,13 @@ name: Check Property Expiration
 on:
   schedule:
     # Runs daily at 2:00 AM UTC (6 PM MST / 7 PM MDT)
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:
   check-expiration:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -21,13 +21,13 @@ jobs:
           response=$(curl -s -w "\n%{http_code}" -X GET \
             "https://property-listing-32ax.vercel.app/api/check-property-expiration" \
             -H "Authorization: Bearer $CRON_SECRET")
-          
+
           http_code=$(echo "$response" | tail -n1)
           body=$(echo "$response" | sed '$d')
-          
+
           echo "Response Code: $http_code"
           echo "Response Body: $body"
-          
+
           if [ "$http_code" -eq 200 ]; then
             echo "✅ Property expiration check completed successfully"
             echo "$body" | jq '.' || echo "$body"

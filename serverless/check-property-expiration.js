@@ -14,11 +14,11 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
+    const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
     const BASE_ID = process.env.AIRTABLE_BASE_ID;
     const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || 'Properties';
 
-    if (!AIRTABLE_TOKEN || !BASE_ID) {
+    if (!AIRTABLE_API_KEY || !BASE_ID) {
       throw new Error('Missing Airtable credentials');
     }
 
@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
       `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`,
       {
         headers: {
-          'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+          'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
           'Content-Type': 'application/json'
         }
       }
@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
             {
               method: 'DELETE',
               headers: {
-                'Authorization': `Bearer ${AIRTABLE_TOKEN}`
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
               }
             }
           );
@@ -179,7 +179,7 @@ module.exports = async (req, res) => {
             {
               method: 'PATCH',
               headers: {
-                'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
