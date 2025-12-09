@@ -694,7 +694,8 @@
             <input type="email" id="verifyEmail" placeholder="john@example.com" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px;">
             <small style="display: block; margin-top: 5px; color: #6b7280;">Enter the contact email for this property</small>
           </div>
-          <button onclick="requestVerificationCode()" style="width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Send Verification Code</button>
+          <button id="sendCodeBtn" onclick="requestVerificationCode()" style="width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Send Verification Code</button>
+          <div id="cooldownMessage" style="display: none; margin-top: 10px; padding: 10px; background: #fef3c7; border-radius: 6px; text-align: center; font-size: 13px; color: #92400e;"></div>
         </div>
 
         <div id="codeStep" style="display: none;">
@@ -702,6 +703,10 @@
             <label style="display: block; margin-bottom: 10px; font-weight: 600;">Enter Verification Code:</label>
             <input type="text" id="verifyCode" placeholder="123456" maxlength="6" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 20px; text-align: center; letter-spacing: 5px; font-weight: 600;">
             <small style="display: block; margin-top: 5px; color: #6b7280;">Check your email for the 6-digit code</small>
+          </div>
+          <div style="margin-bottom: 15px;">
+            <button id="resendCodeBtn" onclick="resendCode()" style="width: 100%; padding: 10px; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px;">Resend Code</button>
+            <div id="resendCooldown" style="display: none; margin-top: 8px; text-align: center; font-size: 12px; color: #6b7280;"></div>
           </div>
           <div style="display: flex; gap: 10px;">
             <button onclick="resetVerificationModal()" style="flex: 1; padding: 12px; background: #6b7280; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Back</button>
@@ -1134,6 +1139,8 @@
     let currentAction = null; // 'update' or 'delete'
     let isVerified = false;
     let verificationToken = null; // Store token for verification
+    let cooldownTimer = null;
+    let cooldownSeconds = 0;
 
     // Email Verification Functions
     function openVerificationModal(propertyId, propertyEmail, action) {
@@ -1169,6 +1176,15 @@
       document.getElementById('codeStep').style.display = 'none';
       document.getElementById('verifyMessage').style.display = 'none';
       document.getElementById('verifyCode').value = '';
+      
+      // Clear cooldown
+      if (cooldownTimer) {
+        clearInterval(cooldownTimer);
+        cooldownTimer = null;
+      }
+      cooldownSeconds = 0;
+      updateCooldownUI();
+      
       // Remove code display if it exists
       const codeDisplay = document.querySelector('.code-display-box');
       if (codeDisplay) codeDisplay.remove();
@@ -1179,6 +1195,12 @@
       
       if (!email) {
         showVerifyMessage('Please enter your email address', 'error');
+        return;
+      }
+
+      // Check if cooldown is active
+      if (cooldownSeconds > 0) {
+        showVerifyMessage(`Please wait ${cooldownSeconds} seconds before requesting another code`, 'error');
         return;
       }
 
@@ -1211,6 +1233,9 @@
           document.getElementById('codeStep').style.display = 'block';
           
           showVerifyMessage('Verification code sent! Check your email.', 'success');
+          
+          // Start 60-second cooldown
+          startCooldown(60);
         } else {
           console.error('❌ Request failed:', data);
           showVerifyMessage(data.error || 'Failed to send code', 'error');
@@ -1272,6 +1297,68 @@
         console.error('Error verifying code:', error);
         showVerifyMessage('Verification failed', 'error');
       }
+    }
+
+    function startCooldown(seconds) {
+      cooldownSeconds = seconds;
+      updateCooldownUI();
+      
+      if (cooldownTimer) clearInterval(cooldownTimer);
+      
+      cooldownTimer = setInterval(() => {
+        cooldownSeconds--;
+        updateCooldownUI();
+        
+        if (cooldownSeconds <= 0) {
+          clearInterval(cooldownTimer);
+          cooldownTimer = null;
+        }
+      }, 1000);
+    }
+
+    function updateCooldownUI() {
+      const sendBtn = document.getElementById('sendCodeBtn');
+      const resendBtn = document.getElementById('resendCodeBtn');
+      const cooldownMsg = document.getElementById('cooldownMessage');
+      const resendCooldownMsg = document.getElementById('resendCooldown');
+      
+      if (cooldownSeconds > 0) {
+        // Disable buttons and show countdown
+        if (sendBtn) {
+          sendBtn.disabled = true;
+          sendBtn.textContent = `Wait ${cooldownSeconds}s`;
+        }
+        if (resendBtn) {
+          resendBtn.disabled = true;
+          resendBtn.textContent = `Wait ${cooldownSeconds}s`;
+        }
+        
+        const message = `Please wait ${cooldownSeconds} seconds before requesting another code.`;
+        if (cooldownMsg) {
+          cooldownMsg.textContent = message;
+          cooldownMsg.style.display = 'block';
+        }
+        if (resendCooldownMsg) {
+          resendCooldownMsg.textContent = message;
+          resendCooldownMsg.style.display = 'block';
+        }
+      } else {
+        // Enable buttons and hide countdown
+        if (sendBtn) {
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'Send Code';
+        }
+        if (resendBtn) {
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend Code';
+        }
+        if (cooldownMsg) cooldownMsg.style.display = 'none';
+        if (resendCooldownMsg) resendCooldownMsg.style.display = 'none';
+      }
+    }
+
+    function resendCode() {
+      requestVerificationCode();
     }
 
     function showVerifyMessage(text, type) {
