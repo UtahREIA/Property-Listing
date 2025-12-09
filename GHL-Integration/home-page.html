@@ -293,11 +293,12 @@
       min-height: 200px;
     }
 
-    /* Verification modal should be centered vertically in viewport */
+    /* Verification modal should appear at top of page */
     #verificationModal {
       display: none;
-      align-items: center !important;
+      align-items: flex-start !important;
       justify-content: center !important;
+      padding-top: 20px !important;
     }
 
     #verificationModal.active {
@@ -305,9 +306,7 @@
     }
 
     #verificationModal .modal-content {
-      margin: auto;
-      position: sticky;
-      top: 20px;
+      margin-top: 0;
     }
 
     @keyframes slideIn {
