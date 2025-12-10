@@ -347,7 +347,11 @@
     // API Configuration
     const API_CONFIG = {
       addPropertyUrl: 'https://property-listing-32ax.vercel.app/api/add-property',
-      uploadImageUrl: 'https://property-listing-32ax.vercel.app/api/upload-image',
+      cloudinary: {
+        cloudName: 'drtiav5a8',
+        uploadPreset: 'ghl_unsigned',
+        apiUrl: 'https://api.cloudinary.com/v1_1/drtiav5a8/image/upload',
+      }
     };
 
     // Multiple images handling
@@ -534,39 +538,46 @@
         // Disable button and show loading
         submitBtn.disabled = true;
         submitBtn.textContent = `Uploading Images (0/${selectedFiles.length})...`;
-        showMessage(`Uploading ${selectedFiles.length} image(s)...`, 'info');
+        showMessage(`Uploading ${selectedFiles.length} image(s) directly to Cloudinary...`, 'info');
 
-        // Step 1: Upload all images to Cloudinary
+        // Step 1: Upload all images to Cloudinary directly
         const uploadedImages = [];
-        
         for (let i = 0; i < selectedFiles.length; i++) {
           const file = selectedFiles[i];
           submitBtn.textContent = `Uploading Images (${i + 1}/${selectedFiles.length})...`;
-          
-          const reader = new FileReader();
-          const imageData = await new Promise((resolve, reject) => {
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
 
-          console.log(`Uploading image ${i + 1}/${selectedFiles.length}...`);
-          const uploadResponse = await fetch(API_CONFIG.uploadImageUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ imageData })
-          });
+          // Prepare form data for Cloudinary
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', API_CONFIG.cloudinary.uploadPreset);
 
-          if (!uploadResponse.ok) {
-            const error = await uploadResponse.json();
-            throw new Error(`Failed to upload image ${i + 1}: ${error.message || 'Unknown error'}`);
+          let uploadResponse, uploadResult;
+          try {
+            uploadResponse = await fetch(API_CONFIG.cloudinary.apiUrl, {
+              method: 'POST',
+              body: formData
+            });
+            uploadResult = await uploadResponse.json();
+          } catch (err) {
+            showMessage(`Network error uploading image ${i + 1}. Please try again.`, 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Add Property Listing';
+            return;
           }
 
-          const uploadResult = await uploadResponse.json();
-          uploadedImages.push({ url: uploadResult.url });
-          console.log(`Image ${i + 1} uploaded successfully:`, uploadResult.url);
+          if (!uploadResponse.ok || !uploadResult.secure_url) {
+            let errorMsg = `Failed to upload image ${i + 1}`;
+            if (uploadResult && uploadResult.error && uploadResult.error.message) {
+              errorMsg += ': ' + uploadResult.error.message;
+            }
+            showMessage(errorMsg, 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Add Property Listing';
+            return;
+          }
+
+          uploadedImages.push({ url: uploadResult.secure_url });
+          console.log(`Image ${i + 1} uploaded successfully:`, uploadResult.secure_url);
         }
 
         // Reorder images to put main photo first
@@ -575,7 +586,7 @@
           uploadedImages.splice(mainPhotoIndex, 1);
           uploadedImages.unshift(mainPhoto);
         }
-        
+
         // Step 2: Collect form data with uploaded image URLs
         submitBtn.textContent = 'Saving Property...';
         showMessage('Saving property details...', 'info');
@@ -636,7 +647,6 @@
 
         if (!response.ok) {
           console.error('API Error Response:', result);
-          
           // Provide specific error messages
           let errorMsg = 'Failed to add property. ';
           if (result.error) {
@@ -646,7 +656,6 @@
           } else {
             errorMsg += 'Please check all fields and try again.';
           }
-          
           throw new Error(errorMsg);
         }
 
