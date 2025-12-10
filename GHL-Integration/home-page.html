@@ -1206,7 +1206,7 @@
 
         // Fetch the actual contact email for this property from backend
         try {
-          const contactRes = await fetch(`/api/get-property-contact-email?propertyId=${encodeURIComponent(currentPropertyId)}`);
+          const contactRes = await fetch(`https://property-listing-32ax.vercel.app/api/get-property-contact-email?propertyId=${encodeURIComponent(currentPropertyId)}`);
           const contactData = await contactRes.json();
           if (!contactRes.ok || !contactData.contactEmail) {
             showVerifyMessage('Could not verify property contact email. Please try again later.', 'error');
