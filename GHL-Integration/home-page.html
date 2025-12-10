@@ -1204,6 +1204,22 @@
         return;
       }
 
+        // Fetch the actual contact email for this property from backend
+        try {
+          const contactRes = await fetch(`/api/get-property-contact-email?propertyId=${encodeURIComponent(currentPropertyId)}`);
+          const contactData = await contactRes.json();
+          if (!contactRes.ok || !contactData.contactEmail) {
+            showVerifyMessage('Could not verify property contact email. Please try again later.', 'error');
+            return;
+          }
+          if (email.toLowerCase() !== contactData.contactEmail.toLowerCase()) {
+            showVerifyMessage('The email you entered does not match the contact email for this property. You cannot update or delete this property.', 'error');
+            return;
+          }
+        } catch (err) {
+          showVerifyMessage('Error verifying contact email. Please try again.', 'error');
+          return;
+        }
       try {
         showVerifyMessage('Sending verification code...', 'info');
         
@@ -1255,48 +1271,47 @@
         return;
       }
 
-      try {
-        showVerifyMessage('Verifying...', 'info');
-        
-        const response = await fetch(API_CONFIG.verifyCodeUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: email,
-            propertyId: currentPropertyId,
-            code: code,
-            token: verificationToken
-          })
-        });
+        try {
+          showVerifyMessage('Verifying...', 'info');
+          const response = await fetch(API_CONFIG.verifyCodeUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              propertyId: currentPropertyId,
+              code: code,
+              token: verificationToken
+            })
+          });
 
-        const data = await response.json();
+          const data = await response.json();
 
-        if (response.ok && data.success) {
-          isVerified = true;
-          showVerifyMessage('✓ Verified successfully!', 'success');
+          if (response.ok && data.success) {
+            isVerified = true;
+            showVerifyMessage('✓ Verified successfully!', 'success');
           
-          // Close verification modal and proceed with action
-          setTimeout(() => {
-            closeVerificationModal();
+            // Close verification modal and proceed with action
+            setTimeout(() => {
+              closeVerificationModal();
             
-            if (currentAction === 'update') {
-              const property = allProperties.find(p => p.id === currentPropertyId);
-              if (property) {
-                openStatusModal(currentPropertyId, property.Status || 'Available');
+              if (currentAction === 'update') {
+                const property = allProperties.find(p => p.id === currentPropertyId);
+                if (property) {
+                  openStatusModal(currentPropertyId, property.Status || 'Available');
+                }
+              } else if (currentAction === 'delete') {
+                proceedWithDelete();
               }
-            } else if (currentAction === 'delete') {
-              proceedWithDelete();
-            }
-          }, 1000);
-        } else {
-          showVerifyMessage(data.error || 'Invalid code', 'error');
+            }, 1000);
+          } else {
+            showVerifyMessage(data.error || 'Invalid code', 'error');
+          }
+        } catch (error) {
+          console.error('Error verifying code:', error);
+          showVerifyMessage('Verification failed', 'error');
         }
-      } catch (error) {
-        console.error('Error verifying code:', error);
-        showVerifyMessage('Verification failed', 'error');
-      }
     }
 
     function startCooldown(seconds) {
