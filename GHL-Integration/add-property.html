@@ -321,7 +321,7 @@
           <div class="form-group">
             <label>Property Images * (Maximum 10 images)</label>
             <input type="file" id="propertyImages" accept="image/*" multiple required>
-            <small>Select multiple images (JPG, PNG, etc.). Maximum 10MB per image. First image will be the main photo.</small>
+            <small>Select multiple images (JPG, PNG, etc.). <strong>Maximum 4MB per image (server limit)</strong>. Maximum 10 images. First image will be the main photo.</small>
           </div>
 
           <div id="imagePreviewContainer" style="display: none; margin-top: 20px;">
@@ -401,6 +401,7 @@
         return;
       }
 
+
       if (files.length > 10) {
         showMessage('Maximum 10 images allowed', 'error');
         e.target.value = '';
@@ -409,8 +410,8 @@
 
       // Validate each file
       for (let file of files) {
-        if (file.size > 10 * 1024 * 1024) {
-          showMessage(`Image "${file.name}" is too large. Maximum 10MB per image.`, 'error');
+        if (file.size > 4 * 1024 * 1024) {
+          showMessage(`Image "${file.name}" is too large. Maximum 4MB per image (server limit).`, 'error');
           e.target.value = '';
           return;
         }
