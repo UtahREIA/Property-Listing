@@ -538,7 +538,7 @@
         // Disable button and show loading
         submitBtn.disabled = true;
         submitBtn.textContent = `Uploading Images (0/${selectedFiles.length})...`;
-        showMessage(`Uploading ${selectedFiles.length} image(s) directly to Cloudinary...`, 'info');
+        showMessage(`Uploading ${selectedFiles.length} image(s)`, 'info');
 
         // Step 1: Upload all images to Cloudinary directly
         const uploadedImages = [];
