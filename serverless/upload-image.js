@@ -1,17 +1,18 @@
 // Serverless function to upload images to Cloudinary
 // Allows users to upload from their device seamlessly
 
+
+// NOTE: Vercel serverless functions have a 4MB body size limit. Large images will fail with 413 error.
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
+
 module.exports = async (req, res) => {
-  // Enable CORS
+  // Always set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  // Handle preflight request
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
