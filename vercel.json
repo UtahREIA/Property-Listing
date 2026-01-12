@@ -44,6 +44,10 @@
       "src": "/api/get-property-contact-email",
       "dest": "serverless/get-property-contact-email.js"
     },
-    { "src": "/api/subscribe", "dest": "serverless/subscribe.js" }
+    {
+      "src": "/api/subscribe(.*)",
+      "dest": "serverless/subscribe.js"
+    }
+
   ]
 }
