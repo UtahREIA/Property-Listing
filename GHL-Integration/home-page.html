@@ -616,6 +616,13 @@
       <a href="#properties" class="btn btn-primary">Browse Properties</a>
       <a href="https://utahreia.org/add-property-page" class="btn btn-secondary">List Your Property</a>
     </div>
+    <!-- Subscription Form -->
+    <form id="subscribeForm" style="margin-top: 40px; max-width: 400px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.15); padding: 24px 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <h3 style="color: white; margin-bottom: 12px;">Subscribe for New Listings</h3>
+      <input type="email" id="subscriberEmail" placeholder="Enter your email address" required style="width: 100%; padding: 12px; border-radius: 6px; border: none; font-size: 16px; margin-bottom: 12px;">
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Subscribe</button>
+      <div id="subscribeMessage" style="margin-top: 10px; font-size: 15px; display: none;"></div>
+    </form>
   </section>
 
   <!-- Main Content -->
@@ -742,6 +749,48 @@
   </div>
 
   <script>
+
+    // Subscription form logic
+    document.getElementById('subscribeForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('subscriberEmail').value.trim();
+      const messageEl = document.getElementById('subscribeMessage');
+      messageEl.style.display = 'none';
+      if (!email) {
+        messageEl.textContent = 'Please enter your email address.';
+        messageEl.style.display = 'block';
+        messageEl.style.color = '#fee2e2';
+        return;
+      }
+      // Basic email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        messageEl.textContent = 'Please enter a valid email address.';
+        messageEl.style.display = 'block';
+        messageEl.style.color = '#fee2e2';
+        return;
+      }
+      // Call backend to store subscriber (endpoint to be implemented)
+      try {
+        const response = await fetch('https://property-listing-32ax.vercel.app/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        if (!response.ok) {
+          const result = await response.json();
+          throw new Error(result.message || 'Subscription failed.');
+        }
+        messageEl.textContent = '✅ Subscribed! You will receive email notifications for new listings.';
+        messageEl.style.color = '#d1fae5';
+        messageEl.style.display = 'block';
+        document.getElementById('subscriberEmail').value = '';
+      } catch (err) {
+        messageEl.textContent = err.message || 'Subscription failed. Please try again.';
+        messageEl.style.color = '#fee2e2';
+        messageEl.style.display = 'block';
+      }
+    });
 
     // API Configuration - Replace with your deployed webhook URLs
     const API_CONFIG = {

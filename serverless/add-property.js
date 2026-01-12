@@ -66,7 +66,18 @@ module.exports = async (req, res) => {
     }
 
     const data = await response.json();
-    
+
+    // Notify subscribers (fire and forget)
+    try {
+      await fetch('https://property-listing-32ax.vercel.app/api/notify-subscribers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ property: propertyData })
+      });
+    } catch (notifyErr) {
+      console.error('Failed to notify subscribers:', notifyErr);
+    }
+
     return res.status(200).json({ 
       success: true,
       message: 'Property added successfully',
