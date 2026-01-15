@@ -91,7 +91,15 @@ module.exports = async (req, res) => {
     }
 
     // Create new
-    await base(SUBSCRIBERS_TABLE).create([{ fields: { Email: email } }]);
+    await base(SUBSCRIBERS_TABLE).create([
+      { fields: {
+          Email: email,
+          Subscribed: true,
+          "Date Subscribed": new Date().toISOString(),
+          "Subscription Status": "Active"
+        }
+      }
+    ]);
     return res.status(200).json({ message: "Subscribed successfully" });
 
   } catch (err) {
