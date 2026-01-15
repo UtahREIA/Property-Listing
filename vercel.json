@@ -47,6 +47,10 @@
     {
       "src": "/api/subscribe(.*)",
       "dest": "serverless/subscribe.js"
+    },
+    {
+      "src": "/api/notify-subscribers",
+      "dest": "serverless/notify-subscribers.js"
     }
 
   ]
