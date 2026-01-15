@@ -95,8 +95,7 @@ module.exports = async (req, res) => {
       await base(SUBSCRIBERS_TABLE).create([
         { fields: {
             Email: email,
-            Subscribed: true,
-            "Subscription Status": "Active"
+            Subscribed: true
           }
         }
       ]);
