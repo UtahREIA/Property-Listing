@@ -91,16 +91,21 @@ module.exports = async (req, res) => {
     }
 
     // Create new
-    await base(SUBSCRIBERS_TABLE).create([
-      { fields: {
-          Email: email,
-          Subscribed: true,
-          "Date Subscribed": new Date().toISOString(),
-          "Subscription Status": "Active"
+    try {
+      await base(SUBSCRIBERS_TABLE).create([
+        { fields: {
+            Email: email,
+            Subscribed: true,
+            "Date Subscribed": new Date().toISOString(),
+            "Subscription Status": "Active"
+          }
         }
-      }
-    ]);
-    return res.status(200).json({ message: "Subscribed successfully" });
+      ]);
+      return res.status(200).json({ message: "Subscribed successfully" });
+    } catch (airtableErr) {
+      console.error("Airtable Create Error:", airtableErr);
+      return res.status(500).json({ message: "Airtable error", error: airtableErr.message || airtableErr });
+    }
 
   } catch (err) {
     // Catch-all error handler ensures we return a JSON response even if code crashes
