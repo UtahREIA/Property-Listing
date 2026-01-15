@@ -69,11 +69,14 @@ module.exports = async (req, res) => {
 
     // Notify subscribers (fire and forget)
     try {
-      await fetch('https://property-listing-32ax.vercel.app/api/notify-subscribers', {
+      console.log('Calling notify-subscribers.js with property:', propertyData);
+      const notifyRes = await fetch('https://property-listing-32ax.vercel.app/api/notify-subscribers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ property: propertyData })
       });
+      const notifyJson = await notifyRes.json().catch(() => ({}));
+      console.log('notify-subscribers.js response:', notifyRes.status, notifyJson);
     } catch (notifyErr) {
       console.error('Failed to notify subscribers:', notifyErr);
     }
