@@ -51,12 +51,16 @@ module.exports = async (req, res) => {
       <p style="margin-top:24px;font-size:13px;color:#888;">To unsubscribe, click <a href="${url}?unsubscribe={{email}}">here</a>.</p>`;
 
     // Send to all
+    console.log('Sending notification email...');
+    console.log('From:', process.env.GMAIL_USER);
+    console.log('BCC:', emails);
     await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: process.env.GMAIL_USER,
       bcc: emails,
       subject,
       html,
     });
+    console.log('Notification email sent successfully.');
     return res.status(200).json({ message: 'Notification sent' });
   } catch (err) {
     console.error('Notify error:', err);
