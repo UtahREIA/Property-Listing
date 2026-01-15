@@ -8,12 +8,12 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY_SUB }).base(pro
 const SUBSCRIBERS_TABLE = 'Subscribers';
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE === 'true',
+  host: process.env.GMAIL_HOST,
+  port: parseInt(process.env.GMAIL_PORT, 10),
+  secure: process.env.GMAIL_SECURE === 'true',
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
   },
 });
 
