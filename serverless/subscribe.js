@@ -96,7 +96,6 @@ module.exports = async (req, res) => {
         { fields: {
             Email: email,
             Subscribed: true,
-            "Date Subscribed": new Date().toISOString(),
             "Subscription Status": "Active"
           }
         }
