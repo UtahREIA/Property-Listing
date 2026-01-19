@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
 
     // --- reCAPTCHA v2 verification ---
     const RECAPTCHA_SECRET = process.env.RECAPTCHA_SECRET || '6LdXrU8sAAAAAP17b8Q7dxKtAqNNueGO9XhlG5io';
-    const recaptchaToken = propertyData['g-recaptcha-response'];
+    const recaptchaToken = propertyData.recaptchaToken;
     if (!recaptchaToken) {
       return res.status(400).json({ error: 'Missing reCAPTCHA token' });
     }
