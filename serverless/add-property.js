@@ -34,6 +34,20 @@ module.exports = async (req, res) => {
     // Get property data from request body
     const propertyData = req.body;
 
+    // --- reCAPTCHA v2 verification ---
+    const RECAPTCHA_SECRET = process.env.RECAPTCHA_SECRET || '6LdXrU8sAAAAAP17b8Q7dxKtAqNNueGO9XhlG5io';
+    const recaptchaToken = propertyData['g-recaptcha-response'];
+    if (!recaptchaToken) {
+      return res.status(400).json({ error: 'Missing reCAPTCHA token' });
+    }
+    const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET}&response=${recaptchaToken}`;
+    const recaptchaRes = await fetch(verifyUrl, { method: 'POST' });
+    const recaptchaJson = await recaptchaRes.json();
+    if (!recaptchaJson.success) {
+      return res.status(400).json({ error: 'reCAPTCHA verification failed' });
+    }
+    // --- end reCAPTCHA verification ---
+
     // Validate required fields
     if (!propertyData.Title || !propertyData.Price || !propertyData.Location) {
       return res.status(400).json({ 

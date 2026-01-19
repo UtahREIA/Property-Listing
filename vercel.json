@@ -51,6 +51,11 @@
     {
       "src": "/api/notify-subscribers",
       "dest": "serverless/notify-subscribers.js"
+    },
+    {
+      "src": "/api/daily-digest",
+      "dest": "serverless/daily-digest.js",
+      "schedule": "0 15 * * *"
     }
 
   ]
