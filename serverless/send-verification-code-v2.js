@@ -1,130 +1,144 @@
-const nodemailer = require("nodemailer");
-const crypto = require("crypto");
+// Serverless function to send verification codes via email using Gmail SMTP
+// Returns encoded verification token that can be validated
+// Updated: 2025-12-08 - Force rebuild
 
-// FAIL LOUDLY if secret not set — no weak fallback
-const SECRET = process.env.VERIFICATION_SECRET;
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
-// Shared CORS + Rate Limiting helper — paste at top of each file
+// Secret for hashing (in production, use environment variable)
+const SECRET = process.env.VERIFICATION_SECRET || 'your-secret-key-change-in-production';
 
-const ALLOWED_ORIGINS = [
-  "https://utahreia.org",
-  "https://www.utahreia.org",
-  "https://app.gohighlevel.com",
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "http://localhost:5500",
-  "http://127.0.0.1:5500"
-];
-
-function setCors(req, res) {
-  const origin = req.headers.origin || "";
-  const isGHL = origin.endsWith(".gohighlevel.com") ||
-                origin.endsWith(".leadconnectorhq.com") ||
-                origin.endsWith(".msgsndr.com");
-  const allowed = ALLOWED_ORIGINS.includes(origin) || isGHL;
-  if (allowed) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-  }
-  res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Max-Age", "86400");
-  return allowed;
-}
-
-function rateLimit(map, key, max, windowMs) {
-  if (!global[map]) global[map] = new Map();
-  const now = Date.now();
-  const rec = global[map].get(key) || { count: 0, resetAt: now + windowMs };
-  if (now > rec.resetAt) { rec.count = 0; rec.resetAt = now + windowMs; }
-  rec.count++;
-  global[map].set(key, rec);
-  return { limited: rec.count > max, resetAt: rec.resetAt, count: rec.count };
-}
-
-function getIP(req) {
-  return req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-         req.headers["x-real-ip"] || req.socket?.remoteAddress || "unknown";
-}
-
+console.log('🚀 Send verification code function loaded - Version 2025-12-08');
 
 function createVerificationToken(email, propertyId, code, expires) {
+  // Create a hash that includes all the data
   const data = `${email}|${propertyId}|${code}|${expires}`;
-  const hash = crypto.createHmac("sha256", SECRET).update(data).digest("hex");
-  return Buffer.from(`${data}|${hash}`).toString("base64");
+  const hash = crypto.createHmac('sha256', SECRET).update(data).digest('hex');
+  // Return base64 encoded token
+  return Buffer.from(`${data}|${hash}`).toString('base64');
 }
 
 module.exports = async (req, res) => {
-  setCors(req, res);
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (!SECRET) {
-    console.error("[CONFIG] VERIFICATION_SECRET env var not set");
-    return res.status(500).json({ error: "Server configuration error" });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
-  const ip = getIP(req);
-
-  // Rate limit per IP: max 5 code requests per 10 minutes
-  const rl_ip = rateLimit("_vcodeIPMap", ip, 5, 10 * 60 * 1000);
-  if (rl_ip.limited) {
-    const mins = Math.ceil((rl_ip.resetAt - Date.now()) / 60000);
-    return res.status(429).json({ error: `Too many requests. Try again in ${mins} minutes.` });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email, propertyId } = req.body;
-  if (!email || !propertyId) return res.status(400).json({ error: "Email and property ID required" });
-  if (!/^\S+@\S+\.\S+$/.test(email)) return res.status(400).json({ error: "Invalid email address" });
-
-  // Rate limit per email: max 3 codes per 10 minutes (prevents email bombing)
-  const rl_email = rateLimit("_vcodeEmailMap", email.toLowerCase(), 3, 10 * 60 * 1000);
-  if (rl_email.limited) {
-    return res.status(429).json({ error: "Too many codes sent to this email. Please wait 10 minutes." });
-  }
-
-  const GMAIL_USER = process.env.GMAIL_USER;
-  const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
-  if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-    return res.status(500).json({ error: "Email service not configured" });
-  }
-
-  // Use cryptographically secure random code
-  const code = crypto.randomInt(100000, 999999).toString();
-  const expires = Date.now() + 10 * 60 * 1000; // 10 minutes
-  const token = createVerificationToken(email, propertyId, code, expires);
-
+  console.log('🔔 Send verification code endpoint called - NEW VERSION');
+  console.log('🔔 Timestamp:', new Date().toISOString());
+  
   try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com", port: 587, secure: false,
-      auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD }
-    });
+    const { email, propertyId } = req.body;
+    console.log(`📧 Request for email: ${email}, propertyId: ${propertyId}`);
 
-    await transporter.sendMail({
-      from: `"Utah REIA Property Listing" <${GMAIL_USER}>`,
-      to: email,
-      subject: "Your Property Verification Code — Utah REIA",
-      html: `
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
-          <div style="background:linear-gradient(135deg,#0f2340,#1a7a4a);padding:30px;text-align:center;border-radius:10px 10px 0 0;">
-            <h1 style="color:white;margin:0;">Email Verification</h1>
-          </div>
-          <div style="background:#f9fafb;padding:30px;border-radius:0 0 10px 10px;">
-            <p style="font-size:16px;color:#333;">Use this code to verify your identity for property management:</p>
-            <div style="background:white;padding:20px;text-align:center;border-radius:8px;margin:25px 0;border:2px dashed #0f2340;">
-              <div style="font-size:40px;font-weight:bold;letter-spacing:10px;color:#0f2340;">${code}</div>
+    if (!email || !propertyId) {
+      return res.status(400).json({ error: 'Email and property ID required' });
+    }
+
+    // Generate 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    
+    // Create verification token
+    const token = createVerificationToken(email, propertyId, code, expires);
+
+    // Send email via Gmail SMTP
+    const GMAIL_USER = process.env.GMAIL_USER;
+    const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+    
+    console.log(`📮 Gmail credentials available: ${GMAIL_USER ? 'YES' : 'NO'}`);
+    
+    if (GMAIL_USER && GMAIL_APP_PASSWORD) {
+      console.log('✉️ Attempting to send email via Gmail SMTP...');
+      try {
+        // Create transporter with Gmail SMTP - more explicit configuration
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false, // use TLS
+          auth: {
+            user: GMAIL_USER,
+            pass: GMAIL_APP_PASSWORD
+          },
+          tls: {
+            rejectUnauthorized: false
+          }
+        });
+
+        // Email content
+        const mailOptions = {
+          from: `"Property Listing" <${GMAIL_USER}>`,
+          to: email,
+          subject: 'Property Management - Email Verification Code',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                <h1 style="color: white; margin: 0;">🔐 Email Verification</h1>
+              </div>
+              <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
+                <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+                  You requested to manage a property. Please use the verification code below:
+                </p>
+                <div style="background: white; padding: 20px; text-align: center; border-radius: 8px; margin: 25px 0;">
+                  <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #2563eb;">
+                    ${code}
+                  </div>
+                </div>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 20px;">
+                  This code will expire in 10 minutes.
+                </p>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 10px;">
+                  If you didn't request this code, please ignore this email.
+                </p>
+              </div>
+              <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+                Property Listing Management System
+              </div>
             </div>
-            <p style="font-size:14px;color:#6b7280;">This code expires in <strong>10 minutes</strong>.</p>
-            <p style="font-size:14px;color:#6b7280;">If you didn't request this, please ignore this email.</p>
-          </div>
-        </div>`
-    });
+          `
+        };
 
-    console.log(`[VERIFY CODE] Sent to ${email.substring(0,3)}***@*** for property ${propertyId} from IP ${ip}`);
-    return res.status(200).json({ success: true, message: "Verification code sent", token });
+        // Send email
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ Verification code sent to ${email} via Gmail SMTP. MessageId: ${info.messageId}`);
+        
+        return res.status(200).json({ 
+          success: true,
+          message: 'Verification code sent to your email',
+          token: token
+        });
+      } catch (error) {
+        console.error('❌ Error sending email via Gmail:', error.message);
+        console.error('Full error:', error);
+        // Email failed - return error
+        return res.status(500).json({ 
+          success: false,
+          error: 'Failed to send verification email. Please try again.',
+          message: error.message
+        });
+      }
+    } else {
+      // No Gmail credentials configured
+      console.log(`⚠️ ERROR - No Gmail credentials found`);
+      return res.status(500).json({ 
+        success: false,
+        error: 'Email service not configured. Please contact support.'
+      });
+    }
+
   } catch (error) {
-    console.error("[VERIFY CODE ERROR]", error.message);
-    return res.status(500).json({ error: "Failed to send verification email", message: error.message });
+    console.error('Error sending verification code:', error);
+    return res.status(500).json({ 
+      error: 'Failed to send verification code',
+      message: error.message 
+    });
   }
 };
