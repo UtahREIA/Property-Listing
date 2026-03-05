@@ -7,23 +7,27 @@
     }
   ],
   "routes": [
-    { "src": "/api/get-properties",            "dest": "serverless/get-properties.js" },
-    { "src": "/api/add-property",              "dest": "serverless/add-property.js" },
-    { "src": "/api/update-property-status",    "dest": "serverless/update-property-status.js" },
-    { "src": "/api/delete-property",           "dest": "serverless/delete-property.js" },
-    { "src": "/api/upload-image",              "dest": "serverless/upload-image.js" },
-    { "src": "/api/send-verification-code",    "dest": "serverless/send-verification-code-v2.js" },
-    { "src": "/api/verify-code",               "dest": "serverless/verify-code.js" },
-    { "src": "/api/check-property-expiration", "dest": "serverless/check-property-expiration.js" },
-    { "src": "/api/get-property-contact-email","dest": "serverless/get-property-contact-email.js" },
-    { "src": "/api/subscribe(.*)",             "dest": "serverless/subscribe.js" },
-    { "src": "/api/notify-subscribers",        "dest": "serverless/notify-subscribers.js" },
-    { "src": "/api/daily-digest",              "dest": "serverless/daily-digest.js" },
-    { "src": "/api/contact-property",          "dest": "serverless/contact-property.js" }
+    { "src": "/api/get-properties",           "dest": "serverless/get-properties.js" },
+    { "src": "/api/add-property",             "dest": "serverless/add-property.js" },
+    { "src": "/api/update-property-status",   "dest": "serverless/update-property-status.js" },
+    { "src": "/api/delete-property",          "dest": "serverless/delete-property.js" },
+    { "src": "/api/upload-image",             "dest": "serverless/upload-image.js" },
+    { "src": "/api/contact-property",         "dest": "serverless/contact-property.js" },
+    { "src": "/api/check-property-expiration","dest": "serverless/check-property-expiration.js" },
+
+    { "src": "/api/send-verification-code",   "dest": "serverless/verification-router.js" },
+    { "src": "/api/verify-code",              "dest": "serverless/verification-router.js" },
+    { "src": "/api/get-property-contact-email","dest": "serverless/verification-router.js" },
+    { "src": "/api/verification(.*)",         "dest": "serverless/verification-router.js" },
+
+    { "src": "/api/subscribe(.*)",            "dest": "serverless/subscribers-router.js" },
+    { "src": "/api/notify-subscribers",       "dest": "serverless/subscribers-router.js" },
+    { "src": "/api/daily-digest",             "dest": "serverless/subscribers-router.js" },
+    { "src": "/api/subscribers(.*)",          "dest": "serverless/subscribers-router.js" }
   ],
   "crons": [
     {
-      "path": "/api/daily-digest",
+      "path": "/api/subscribers?action=daily-digest",
       "schedule": "0 16 * * *"
     }
   ]
