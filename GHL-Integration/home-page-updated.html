@@ -644,17 +644,29 @@
     <div class="filters-section">
       <h2>Search Properties</h2>
       <div class="filters-grid">
+
+        <!-- Category (drives Property Type options) -->
+        <div class="filter-group">
+          <label>Category</label>
+          <select id="categoryFilter" onchange="onCategoryChange()">
+            <option value="">All Categories</option>
+            <option value="Residential">🏠 Residential</option>
+            <option value="Multifamily">🏢 Multifamily</option>
+            <option value="Commercial">🏪 Commercial</option>
+            <option value="Industrial">🏭 Industrial</option>
+            <option value="Land">🌿 Land</option>
+            <option value="Other">📦 Other</option>
+          </select>
+        </div>
+
+        <!-- Property Type (filtered by Category) -->
         <div class="filter-group">
           <label>Property Type</label>
           <select id="propertyTypeFilter">
             <option value="">All Types</option>
-            <option value="House">House</option>
-            <option value="Apartment">Apartment</option>
-            <option value="Condo">Condo</option>
-            <option value="Townhouse">Townhouse</option>
-            <option value="Villa">Villa</option>
           </select>
         </div>
+
         <div class="filter-group">
           <label>Min Price</label>
           <input type="number" id="minPriceFilter" placeholder="$0">
@@ -672,13 +684,13 @@
             <option value="Pending">Pending</option>
           </select>
         </div>
-        <!-- NEW: Has Contact Info filter -->
-        <div class="filter-group">
+        <div class="filter-group" style="display:flex; align-items:flex-end;">
           <div class="filter-checkbox-group">
             <input type="checkbox" id="hasContactFilter">
             <label for="hasContactFilter">Has Contact Info</label>
           </div>
         </div>
+
       </div>
       <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
     </div>
@@ -814,7 +826,10 @@
     let allProperties = [];
 
     // Load properties on page load
-    document.addEventListener('DOMContentLoaded', loadProperties);
+    document.addEventListener('DOMContentLoaded', function() {
+      initTypeDropdown();
+      loadProperties();
+    });
 
     async function loadProperties() {
       try {
@@ -879,22 +894,77 @@
       renderBatch(0);
     }
 
+    // ── Category → Property Type map ─────────────────────────────────────────
+    const CATEGORY_MAP = {
+      'Residential':  ['House', 'Condo', 'Townhouse', 'Apartment', 'Villa', 'Mobile Home'],
+      'Multifamily':  ['Duplex', 'Triplex', 'Fourplex', 'Apartment Complex'],
+      'Commercial':   ['Office', 'Retail', 'Mixed Use', 'Hotel/Motel'],
+      'Industrial':   ['Warehouse', 'Manufacturing', 'Flex Space', 'Self-Storage'],
+      'Land':         ['Residential Lot', 'Commercial Lot', 'Farm/Ranch', 'Raw Land'],
+      'Other':        ['Mobile Home Park', 'Senior Housing', 'Special Purpose'],
+    };
+
+    // Populate or reset the Property Type dropdown based on selected category
+    function onCategoryChange() {
+      const category = document.getElementById('categoryFilter').value;
+      const typeSelect = document.getElementById('propertyTypeFilter');
+      typeSelect.innerHTML = '<option value="">All Types</option>';
+
+      const types = category ? CATEGORY_MAP[category] || [] : [];
+      types.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        typeSelect.appendChild(opt);
+      });
+
+      // Auto-apply so grid updates immediately when category changes
+      applyFilters();
+    }
+
+    // Initialise the Property Type dropdown with all types on page load
+    function initTypeDropdown() {
+      const typeSelect = document.getElementById('propertyTypeFilter');
+      typeSelect.innerHTML = '<option value="">All Types</option>';
+      const allTypes = [...new Set(Object.values(CATEGORY_MAP).flat())].sort();
+      allTypes.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        typeSelect.appendChild(opt);
+      });
+    }
+
     function applyFilters() {
+      const categoryFilter  = document.getElementById('categoryFilter').value;
       const typeFilter      = document.getElementById('propertyTypeFilter').value;
       const minPrice        = parseFloat(document.getElementById('minPriceFilter').value) || 0;
       const maxPrice        = parseFloat(document.getElementById('maxPriceFilter').value) || Infinity;
       const statusFilter    = document.getElementById('statusFilter').value;
       const hasContactOnly  = document.getElementById('hasContactFilter').checked;
 
+      // The types that belong to the selected category (empty = all)
+      const categoryTypes   = categoryFilter ? (CATEGORY_MAP[categoryFilter] || []) : [];
+
       const filtered = allProperties.filter(property => {
-        const matchesType       = !typeFilter     || property['Property Type'] === typeFilter;
-        const matchesMinPrice   = !property.Price || property.Price >= minPrice;
-        const matchesMaxPrice   = !property.Price || property.Price <= maxPrice;
-        const matchesStatus     = !statusFilter   || property.Status === statusFilter;
-        const matchesContact    = !hasContactOnly ||
+        const propType = property['Property Type'] || '';
+        const propCategory = property['Category'] || '';
+
+        // Match category: check both the Category field (if stored) and the type list
+        const matchesCategory = !categoryFilter ||
+          propCategory === categoryFilter ||
+          categoryTypes.includes(propType);
+
+        const matchesType     = !typeFilter   || propType === typeFilter;
+        const matchesMinPrice = !property.Price || property.Price >= minPrice;
+        const matchesMaxPrice = !property.Price || property.Price <= maxPrice;
+        const matchesStatus   = !statusFilter  || property.Status === statusFilter;
+        const matchesContact  = !hasContactOnly ||
           (property["Contact's Email"] || property["Contact's Phone Number"] || property["Contact's Name"]);
-        return matchesType && matchesMinPrice && matchesMaxPrice && matchesStatus && matchesContact;
+
+        return matchesCategory && matchesType && matchesMinPrice && matchesMaxPrice && matchesStatus && matchesContact;
       });
+
       displayProperties(filtered);
     }
 
