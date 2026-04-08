@@ -1,6 +1,6 @@
 // Serverless function to fetch notes from Airtable
-const AIRTABLE_API_KEY  = process.env.AIRTABLE_API_KEY;
-const AIRTABLE_BASE_ID  = process.env.AIRTABLE_BASE_ID;
+const AIRTABLE_API_KEY  = process.env.AIRTABLE_NOTE_API_KEY;
+const AIRTABLE_BASE_ID  = process.env.AIRTABLE_NOTE_BASE_ID;
 const AIRTABLE_TABLE    = 'Notes';
 
 module.exports = async (req, res) => {
