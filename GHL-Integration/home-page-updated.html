@@ -1689,6 +1689,10 @@
         if (e.key === 'ArrowLeft') navigateImage(-1);
         if (e.key === 'ArrowRight') navigateImage(1);
       }
+      if (document.getElementById('noteModal').classList.contains('active') && noteModalImages.length > 1) {
+        if (e.key === 'ArrowLeft') navigateNoteImage(-1);
+        if (e.key === 'ArrowRight') navigateNoteImage(1);
+      }
     });
 
     // ============================================================
@@ -2148,6 +2152,26 @@
     }
 
     // ── Note detail modal ────────────────────────────────────────
+    let currentNoteImageIndex = 0;
+    let noteModalImages       = [];
+
+    function navigateNoteImage(dir) {
+      currentNoteImageIndex = (currentNoteImageIndex + dir + noteModalImages.length) % noteModalImages.length;
+      updateNoteImageDisplay();
+    }
+    function goToNoteImage(idx) {
+      currentNoteImageIndex = idx;
+      updateNoteImageDisplay();
+    }
+    function updateNoteImageDisplay() {
+      document.querySelectorAll('[data-note-img-index]').forEach((img, i) =>
+        img.classList.toggle('active', i === currentNoteImageIndex));
+      document.querySelectorAll('[data-note-thumb]').forEach((t, i) =>
+        t.classList.toggle('active', i === currentNoteImageIndex));
+      const counter = document.getElementById('noteImgCounter');
+      if (counter) counter.textContent = currentNoteImageIndex + 1;
+    }
+
     function viewNote(id) {
       const n = allNotes.find(x => x.id === id);
       if (!n) return;
@@ -2156,20 +2180,49 @@
       const perfClass = { 'Performing':'perf-performing', 'Non-Performing':'perf-nonperforming',
                           'Sub-Performing':'perf-subperforming', 'Re-Performing':'perf-reperforming' }[perf] || '';
 
-      const imgUrl = n.Images && n.Images[0]
-        ? (n.Images[0].url)
-        : '';
+      noteModalImages       = (n.Images && n.Images.length > 0) ? n.Images.map(img => img.url) : [];
+      currentNoteImageIndex = 0;
+      const multiImg = noteModalImages.length > 1;
 
-      const discount = n.Discount ? `<div class="note-detail-stat"><span class="nds-label">Discount</span><span class="nds-val discount-val">${n.Discount}% off UPB</span></div>` : '';
-      const yieldStat = n.Yield   ? `<div class="note-detail-stat"><span class="nds-label">Approx. Yield</span><span class="nds-val yield-val">${n.Yield}%</span></div>` : '';
+      const badgesHTML = `
+        <div class="note-modal-img-overlay">
+          ${perf ? `<span class="note-badge ${perfClass}" style="font-size:13px;padding:5px 14px;">${perf}</span>` : ''}
+          ${n['Note Position'] ? `<span class="note-badge note-position" style="font-size:13px;padding:5px 14px;">${n['Note Position']}</span>` : ''}
+        </div>`;
+
+      const imageSliderHTML = noteModalImages.length > 0 ? `
+        <div class="modal-image-container" style="border-radius:12px 12px 0 0;">
+          ${noteModalImages.map((url, i) => `
+            <img src="${url}" alt="${n.Title || 'Note'} - Image ${i + 1}"
+                 class="modal-image ${i === 0 ? 'active' : ''}" data-note-img-index="${i}"
+                 onerror="this.style.display='none'">`).join('')}
+          ${multiImg ? `
+            <button class="image-nav-btn prev" id="noteImgPrev">&#8249;</button>
+            <button class="image-nav-btn next" id="noteImgNext">&#8250;</button>
+            <div class="image-counter"><span id="noteImgCounter">1</span> / ${noteModalImages.length}</div>` : ''}
+          ${badgesHTML}
+        </div>
+        ${multiImg ? `
+        <div class="image-thumbnails">
+          ${noteModalImages.map((url, i) => `
+            <div class="thumbnail ${i === 0 ? 'active' : ''}" data-note-thumb="${i}">
+              <img src="${url}" alt="Thumbnail ${i + 1}" onerror="this.parentElement.style.display='none'">
+            </div>`).join('')}
+        </div>` : ''}` : `
+        <div style="width:100%;height:180px;background:linear-gradient(135deg,#1e3a5f,#1e40af);border-radius:12px 12px 0 0;position:relative;display:flex;align-items:center;justify-content:center;">
+          <div style="text-align:center;color:rgba(255,255,255,0.5);">
+            <div style="font-size:36px;margin-bottom:8px;">📋</div>
+            <div style="font-size:13px;">No photos</div>
+          </div>
+          ${badgesHTML}
+        </div>`;
+
+      const discount  = n.Discount ? `<div class="note-detail-stat"><span class="nds-label">Discount</span><span class="nds-val discount-val">${n.Discount}% off UPB</span></div>` : '';
+      const yieldStat = n.Yield    ? `<div class="note-detail-stat"><span class="nds-label">Approx. Yield</span><span class="nds-val yield-val">${n.Yield}%</span></div>` : '';
 
       document.getElementById('noteModalDetails').innerHTML = `
-        <div style="position:relative;">
-          ${imgUrl ? `<img src="${imgUrl}" style="width:100%;height:320px;object-fit:cover;border-radius:12px 12px 0 0;display:block;" onerror="this.style.display='none'">` : `<div style="width:100%;height:180px;background:#1e3a5f;border-radius:12px 12px 0 0;"></div>`}
-          <div class="note-modal-img-overlay">
-            ${perf ? `<span class="note-badge ${perfClass}" style="font-size:13px;padding:5px 14px;">${perf}</span>` : ''}
-            ${n['Note Position'] ? `<span class="note-badge note-position" style="font-size:13px;padding:5px 14px;">${n['Note Position']}</span>` : ''}
-          </div>
+        <div>
+          ${imageSliderHTML}
         </div>
         <div class="modal-body">
           <div style="display:inline-block;background:#f3f4f6;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;color:#6b7280;font-family:monospace;margin-bottom:12px;">Note ID: ${n.id}</div>
@@ -2221,6 +2274,7 @@
         </div>`;
 
       setTimeout(() => {
+        // Contact button
         const btn = document.getElementById('openNoteContactBtn');
         if (btn) {
           btn.addEventListener('click', function(e) {
@@ -2232,6 +2286,17 @@
             );
           });
         }
+        // Image navigation arrows
+        const prevBtn = document.getElementById('noteImgPrev');
+        const nextBtn = document.getElementById('noteImgNext');
+        if (prevBtn) prevBtn.addEventListener('click', () => navigateNoteImage(-1));
+        if (nextBtn) nextBtn.addEventListener('click', () => navigateNoteImage(1));
+        // Thumbnails
+        document.querySelectorAll('[data-note-thumb]').forEach(thumb => {
+          thumb.addEventListener('click', function() {
+            goToNoteImage(parseInt(this.getAttribute('data-note-thumb')));
+          });
+        });
       }, 100);
 
       const modal = document.getElementById('noteModal');
@@ -2242,6 +2307,8 @@
 
     function closeNoteModal() {
       document.getElementById('noteModal').classList.remove('active');
+      currentNoteImageIndex = 0;
+      noteModalImages       = [];
     }
     document.getElementById('noteModal').addEventListener('click', e => {
       if (e.target.id === 'noteModal') closeNoteModal();
