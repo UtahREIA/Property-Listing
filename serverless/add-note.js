@@ -18,6 +18,7 @@ module.exports = async (req, res) => {
       propertyType, propertyAddress, state, ltv,
       maturityDate, originationDate, status, description,
       contactName, contactEmail, contactPhone,
+      imageUrls,
     } = req.body;
 
     // Required field validation
@@ -57,6 +58,11 @@ module.exports = async (req, res) => {
     if (description)      fields['Description']       = description;
     if (maturityDate)     fields['Maturity Date']     = maturityDate;
     if (originationDate)  fields['Origination Date']  = originationDate;
+
+    // Airtable attachment fields require an array of { url } objects
+    if (Array.isArray(imageUrls) && imageUrls.length > 0) {
+      fields['Images'] = imageUrls.map(u => ({ url: u }));
+    }
 
     const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}`;
 

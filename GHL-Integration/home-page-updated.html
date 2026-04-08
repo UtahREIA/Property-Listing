@@ -739,6 +739,77 @@
     .list-note-submit-btn:hover    { opacity: 0.92; }
     .list-note-submit-btn:disabled { background: #9ca3af; cursor: not-allowed; }
 
+    /* ======== NOTE IMAGE UPLOAD ======== */
+    .note-img-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .note-img-slot {
+      position: relative;
+      border: 2px dashed #d1d5db;
+      border-radius: 10px;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      cursor: pointer;
+      background: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .note-img-slot:not(.note-img-slot-locked):hover { border-color: #1e40af; background: #eff6ff; }
+    .note-img-slot-locked { cursor: default; opacity: 0.6; }
+    .note-img-slot.has-img { border-style: solid; border-color: #1e40af; cursor: default; opacity: 1; }
+    .note-img-slot.is-main  { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.25); }
+    .note-img-placeholder { text-align: center; pointer-events: none; }
+    .note-img-preview { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
+    .note-img-actions {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      display: flex;
+      gap: 4px;
+      padding: 6px;
+      background: rgba(0,0,0,0.55);
+    }
+    .note-img-main-btn {
+      flex: 1;
+      padding: 4px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      transition: background 0.15s;
+    }
+    .note-img-main-btn:hover  { background: rgba(245,158,11,0.8); }
+    .note-img-main-btn.active { background: #f59e0b; color: #000; }
+    .note-img-remove-btn {
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: rgba(220,38,38,0.75);
+      color: #fff;
+    }
+    .note-img-remove-btn:hover { background: #dc2626; }
+    .note-img-uploading {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e40af;
+    }
+    @media (max-width: 480px) { .note-img-upload-grid { grid-template-columns: repeat(2, 1fr); } }
+
     /* ======== NOTE CONTACT MODAL ======== */
     #noteContactModal .modal-content { max-width: 520px; }
     .note-contact-header {
@@ -1047,20 +1118,20 @@
             <h4>Financials</h4>
             <div class="list-note-grid-2">
               <div class="contact-form-group">
-                <label>Asking Price ($) <span class="required-star">*</span></label>
-                <input type="number" id="lnAskingPrice" placeholder="42000" min="0" required>
+                <label>Asking Price <span class="required-star">*</span></label>
+                <input type="text" id="lnAskingPrice" placeholder="$0" data-currency required autocomplete="off">
               </div>
               <div class="contact-form-group">
-                <label>Current Balance / UPB ($)</label>
-                <input type="number" id="lnCurrentBalance" placeholder="48500" min="0">
+                <label>Current Balance / UPB</label>
+                <input type="text" id="lnCurrentBalance" placeholder="$0" data-currency autocomplete="off">
               </div>
               <div class="contact-form-group">
-                <label>Original Balance ($)</label>
-                <input type="number" id="lnOriginalBalance" placeholder="85000" min="0">
+                <label>Original Balance</label>
+                <input type="text" id="lnOriginalBalance" placeholder="$0" data-currency autocomplete="off">
               </div>
               <div class="contact-form-group">
-                <label>Monthly Payment ($)</label>
-                <input type="number" id="lnMonthlyPayment" placeholder="712" min="0">
+                <label>Monthly Payment</label>
+                <input type="text" id="lnMonthlyPayment" placeholder="$0" data-currency autocomplete="off">
               </div>
               <div class="contact-form-group">
                 <label>Interest Rate (%)</label>
@@ -1109,6 +1180,53 @@
               <label>Property Address</label>
               <input type="text" id="lnPropertyAddress" placeholder="123 Main St, Salt Lake City, UT 84101">
             </div>
+          </div>
+
+          <!-- Property Images -->
+          <div class="list-note-section">
+            <h4>Collateral Property Photos <span style="font-weight:400;color:#9ca3af;font-size:12px;text-transform:none;">(up to 3 — click ★ to set as main image)</span></h4>
+            <div class="note-img-upload-grid" id="noteImgGrid">
+              <div class="note-img-slot" id="noteImgSlot0" onclick="triggerNoteImgPick(0)">
+                <input type="file" id="noteImgFile0" accept="image/*" style="display:none;" onchange="handleNoteImgSelect(0, this)">
+                <div class="note-img-placeholder" id="noteImgPlaceholder0">
+                  <div style="font-size:28px;margin-bottom:6px;">📷</div>
+                  <div style="font-size:13px;color:#9ca3af;">Add Photo</div>
+                </div>
+                <img id="noteImgPreview0" class="note-img-preview" style="display:none;">
+                <div class="note-img-actions" id="noteImgActions0" style="display:none;">
+                  <button type="button" class="note-img-main-btn" id="noteImgMainBtn0" onclick="setMainNoteImg(event,0)" title="Set as main image">★ Main</button>
+                  <button type="button" class="note-img-remove-btn" onclick="removeNoteImg(event,0)" title="Remove">✕</button>
+                </div>
+                <div class="note-img-uploading" id="noteImgUploading0" style="display:none;">Uploading…</div>
+              </div>
+              <div class="note-img-slot note-img-slot-locked" id="noteImgSlot1">
+                <input type="file" id="noteImgFile1" accept="image/*" style="display:none;" onchange="handleNoteImgSelect(1, this)">
+                <div class="note-img-placeholder" id="noteImgPlaceholder1">
+                  <div style="font-size:28px;margin-bottom:6px;opacity:0.4;">📷</div>
+                  <div style="font-size:13px;color:#d1d5db;">Photo 2</div>
+                </div>
+                <img id="noteImgPreview1" class="note-img-preview" style="display:none;">
+                <div class="note-img-actions" id="noteImgActions1" style="display:none;">
+                  <button type="button" class="note-img-main-btn" id="noteImgMainBtn1" onclick="setMainNoteImg(event,1)" title="Set as main image">★ Main</button>
+                  <button type="button" class="note-img-remove-btn" onclick="removeNoteImg(event,1)" title="Remove">✕</button>
+                </div>
+                <div class="note-img-uploading" id="noteImgUploading1" style="display:none;">Uploading…</div>
+              </div>
+              <div class="note-img-slot note-img-slot-locked" id="noteImgSlot2">
+                <input type="file" id="noteImgFile2" accept="image/*" style="display:none;" onchange="handleNoteImgSelect(2, this)">
+                <div class="note-img-placeholder" id="noteImgPlaceholder2">
+                  <div style="font-size:28px;margin-bottom:6px;opacity:0.4;">📷</div>
+                  <div style="font-size:13px;color:#d1d5db;">Photo 3</div>
+                </div>
+                <img id="noteImgPreview2" class="note-img-preview" style="display:none;">
+                <div class="note-img-actions" id="noteImgActions2" style="display:none;">
+                  <button type="button" class="note-img-main-btn" id="noteImgMainBtn2" onclick="setMainNoteImg(event,2)" title="Set as main image">★ Main</button>
+                  <button type="button" class="note-img-remove-btn" onclick="removeNoteImg(event,2)" title="Remove">✕</button>
+                </div>
+                <div class="note-img-uploading" id="noteImgUploading2" style="display:none;">Uploading…</div>
+              </div>
+            </div>
+            <div id="noteImgError" style="display:none;color:#dc2626;font-size:13px;margin-top:8px;"></div>
           </div>
 
           <!-- Description -->
@@ -2209,16 +2327,7 @@
       el.style.display = 'block';
     }
 
-    // ── List a Note modal ────────────────────────────────────────
-    function openListNoteModal() {
-      document.getElementById('listNoteForm').reset();
-      const msg = document.getElementById('listNoteMsg');
-      msg.style.display = 'none';
-      const btn = document.getElementById('listNoteSubmitBtn');
-      btn.disabled = false; btn.textContent = 'Submit Note Listing';
-      document.getElementById('listNoteModal').classList.add('active');
-      document.getElementById('listNoteModal').scrollTop = 0;
-    }
+    // ── List a Note modal (stub — full version defined below) ────
     function closeListNoteModal() {
       document.getElementById('listNoteModal').classList.remove('active');
     }
@@ -2226,31 +2335,255 @@
       if (e.target.id === 'listNoteModal') closeListNoteModal();
     });
 
+    // ── Currency formatting for List-a-Note price fields ────────
+    (function() {
+      function formatCurrency(raw) {
+        const digits = raw.replace(/[^0-9]/g, '');
+        if (!digits) return '';
+        return '$' + parseInt(digits, 10).toLocaleString('en-US');
+      }
+      document.querySelectorAll('[data-currency]').forEach(function(el) {
+        el.addEventListener('input', function() {
+          const pos = this.selectionStart;
+          const before = this.value.length;
+          this.value = formatCurrency(this.value);
+          const after = this.value.length;
+          try { this.setSelectionRange(pos + (after - before), pos + (after - before)); } catch(e) {}
+        });
+        el.addEventListener('blur', function() {
+          this.value = formatCurrency(this.value);
+        });
+      });
+    })();
+
+    // ── Note image upload state ──────────────────────────────────
+    const noteImgUrls   = [null, null, null];  // Cloudinary URLs
+    let   noteMainImgIdx = 0;                  // which slot is "main"
+
+    function triggerNoteImgPick(idx) {
+      const slot = document.getElementById('noteImgSlot' + idx);
+      if (slot.classList.contains('has-img') || slot.classList.contains('note-img-slot-locked')) return;
+      document.getElementById('noteImgFile' + idx).click();
+    }
+
+    async function handleNoteImgSelect(idx, input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const errEl = document.getElementById('noteImgError');
+      errEl.style.display = 'none';
+
+      if (file.size > 4 * 1024 * 1024) {
+        errEl.textContent = 'Image must be under 4MB.';
+        errEl.style.display = 'block';
+        input.value = '';
+        return;
+      }
+
+      // Show uploading state
+      document.getElementById('noteImgPlaceholder' + idx).style.display = 'none';
+      document.getElementById('noteImgUploading' + idx).style.display = 'flex';
+
+      try {
+        const base64 = await fileToBase64(file);
+        const res = await fetch('https://property-listing-32ax.vercel.app/api/upload-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageData: base64 }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.url) throw new Error(data.message || 'Upload failed');
+
+        noteImgUrls[idx] = data.url;
+
+        // Show preview
+        const preview = document.getElementById('noteImgPreview' + idx);
+        preview.src = data.url;
+        preview.style.display = 'block';
+        document.getElementById('noteImgUploading' + idx).style.display = 'none';
+        document.getElementById('noteImgActions' + idx).style.display = 'flex';
+
+        const slot = document.getElementById('noteImgSlot' + idx);
+        slot.classList.add('has-img');
+        slot.classList.remove('note-img-slot-locked');
+
+        // If this is the first image, auto-set as main
+        if (noteImgUrls.filter(Boolean).length === 1) setMainNoteImg(null, idx);
+
+        // Unlock the next empty slot
+        unlockNextNoteSlot();
+
+        // Update main button active state
+        refreshMainBtns();
+
+      } catch (err) {
+        document.getElementById('noteImgUploading' + idx).style.display = 'none';
+        document.getElementById('noteImgPlaceholder' + idx).style.display = 'flex';
+        errEl.textContent = 'Upload failed: ' + err.message;
+        errEl.style.display = 'block';
+        input.value = '';
+      }
+    }
+
+    function setMainNoteImg(e, idx) {
+      if (e) e.stopPropagation();
+      if (!noteImgUrls[idx]) return;
+      noteMainImgIdx = idx;
+      refreshMainBtns();
+    }
+
+    function removeNoteImg(e, idx) {
+      e.stopPropagation();
+      noteImgUrls[idx] = null;
+
+      document.getElementById('noteImgPreview' + idx).style.display = 'none';
+      document.getElementById('noteImgPreview' + idx).src = '';
+      document.getElementById('noteImgActions' + idx).style.display = 'none';
+      document.getElementById('noteImgPlaceholder' + idx).style.display = 'flex';
+      document.getElementById('noteImgFile' + idx).value = '';
+
+      const slot = document.getElementById('noteImgSlot' + idx);
+      slot.classList.remove('has-img', 'is-main');
+
+      // Re-lock slots after the last filled one
+      relockNoteSlots();
+
+      // If main was removed, reassign to first available
+      if (noteMainImgIdx === idx) {
+        noteMainImgIdx = noteImgUrls.findIndex(Boolean);
+        if (noteMainImgIdx === -1) noteMainImgIdx = 0;
+      }
+      refreshMainBtns();
+    }
+
+    function unlockNextNoteSlot() {
+      for (let i = 0; i < 3; i++) {
+        if (!noteImgUrls[i]) {
+          const slot = document.getElementById('noteImgSlot' + i);
+          slot.classList.remove('note-img-slot-locked');
+          slot.style.cursor = 'pointer';
+          slot.onclick = function() { triggerNoteImgPick(i); };
+          break;
+        }
+      }
+    }
+
+    function relockNoteSlots() {
+      let foundEmpty = false;
+      for (let i = 0; i < 3; i++) {
+        if (!noteImgUrls[i]) {
+          const slot = document.getElementById('noteImgSlot' + i);
+          if (foundEmpty) {
+            slot.classList.add('note-img-slot-locked');
+            slot.style.cursor = 'default';
+            slot.onclick = null;
+          } else {
+            foundEmpty = true;
+            slot.classList.remove('note-img-slot-locked');
+            slot.style.cursor = 'pointer';
+            slot.onclick = (function(idx){ return function(){ triggerNoteImgPick(idx); }; })(i);
+          }
+        }
+      }
+    }
+
+    function refreshMainBtns() {
+      for (let i = 0; i < 3; i++) {
+        const btn  = document.getElementById('noteImgMainBtn' + i);
+        const slot = document.getElementById('noteImgSlot' + i);
+        if (!btn) continue;
+        const isMain = (i === noteMainImgIdx && noteImgUrls[i]);
+        btn.classList.toggle('active', !!isMain);
+        slot.classList.toggle('is-main', !!isMain);
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload  = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function resetNoteImgState() {
+      for (let i = 0; i < 3; i++) {
+        noteImgUrls[i] = null;
+        document.getElementById('noteImgPreview' + i).style.display = 'none';
+        document.getElementById('noteImgPreview' + i).src = '';
+        document.getElementById('noteImgActions' + i).style.display = 'none';
+        document.getElementById('noteImgPlaceholder' + i).style.display = 'flex';
+        document.getElementById('noteImgFile' + i).value = '';
+        const slot = document.getElementById('noteImgSlot' + i);
+        slot.classList.remove('has-img', 'is-main');
+        if (i > 0) {
+          slot.classList.add('note-img-slot-locked');
+          slot.style.cursor = 'default';
+          slot.onclick = null;
+        } else {
+          slot.classList.remove('note-img-slot-locked');
+          slot.style.cursor = 'pointer';
+          slot.onclick = function() { triggerNoteImgPick(0); };
+        }
+      }
+      noteMainImgIdx = 0;
+      document.getElementById('noteImgError').style.display = 'none';
+    }
+
+    function openListNoteModal() {
+      document.getElementById('listNoteForm').reset();
+      document.querySelectorAll('[data-currency]').forEach(el => el.value = '');
+      resetNoteImgState();
+      const msg = document.getElementById('listNoteMsg');
+      msg.style.display = 'none';
+      const btn = document.getElementById('listNoteSubmitBtn');
+      btn.disabled = false; btn.textContent = 'Submit Note Listing';
+      document.getElementById('listNoteModal').classList.add('active');
+      document.getElementById('listNoteModal').scrollTop = 0;
+    }
+
+    // Helper to strip currency formatting before submission
+    function parseCurrencyInput(id) {
+      const val = document.getElementById(id).value.replace(/[^0-9.]/g, '');
+      return val ? parseFloat(val) : null;
+    }
+
     async function submitListNote(e) {
       e.preventDefault();
       const btn = document.getElementById('listNoteSubmitBtn');
       btn.disabled = true; btn.textContent = 'Submitting…';
 
       const get = id => document.getElementById(id).value.trim();
+
+      // Build ordered image URL array: main image first, then others
+      const uploadedUrls = noteImgUrls.filter(Boolean);
+      const orderedImgs = [];
+      if (uploadedUrls.length > 0) {
+        if (noteImgUrls[noteMainImgIdx]) orderedImgs.push(noteImgUrls[noteMainImgIdx]);
+        noteImgUrls.forEach((url, i) => { if (url && i !== noteMainImgIdx) orderedImgs.push(url); });
+      }
+
       const payload = {
         title:             get('lnTitle'),
-        askingPrice:       get('lnAskingPrice'),
-        originalBalance:   get('lnOriginalBalance'),
-        currentBalance:    get('lnCurrentBalance'),
-        interestRate:      get('lnInterestRate'),
-        monthlyPayment:    get('lnMonthlyPayment'),
+        askingPrice:       parseCurrencyInput('lnAskingPrice'),
+        originalBalance:   parseCurrencyInput('lnOriginalBalance'),
+        currentBalance:    parseCurrencyInput('lnCurrentBalance'),
+        monthlyPayment:    parseCurrencyInput('lnMonthlyPayment'),
+        interestRate:      get('lnInterestRate') || null,
         notePosition:      get('lnNotePosition'),
         performanceStatus: get('lnPerfStatus'),
         propertyType:      get('lnPropertyType'),
         propertyAddress:   get('lnPropertyAddress'),
         state:             get('lnState'),
-        ltv:               get('lnLTV'),
+        ltv:               get('lnLTV') || null,
         maturityDate:      get('lnMaturityDate'),
         originationDate:   get('lnOriginationDate'),
         description:       get('lnDescription'),
         contactName:       get('lnContactName'),
         contactEmail:      get('lnContactEmail'),
         contactPhone:      get('lnContactPhone'),
+        imageUrls:         orderedImgs,
         status:            'Available',
       };
 
@@ -2263,10 +2596,10 @@
         const data = await res.json();
         if (res.ok && data.success) {
           const msg = document.getElementById('listNoteMsg');
-          msg.textContent  = '✅ Your note has been listed! It will appear in the marketplace shortly.';
-          msg.className    = 'contact-msg success';
+          msg.textContent   = '✅ Your note has been listed! It will appear in the marketplace shortly.';
+          msg.className     = 'contact-msg success';
           msg.style.display = 'block';
-          btn.textContent  = 'Submitted!';
+          btn.textContent   = 'Submitted!';
           document.getElementById('listNoteForm').reset();
           setTimeout(() => { closeListNoteModal(); loadNotes(); }, 2500);
         } else {
@@ -2274,8 +2607,8 @@
         }
       } catch (err) {
         const msg = document.getElementById('listNoteMsg');
-        msg.textContent  = err.message || 'Error submitting note. Please try again.';
-        msg.className    = 'contact-msg error';
+        msg.textContent   = err.message || 'Error submitting note. Please try again.';
+        msg.className     = 'contact-msg error';
         msg.style.display = 'block';
         btn.disabled = false; btn.textContent = 'Submit Note Listing';
       }
