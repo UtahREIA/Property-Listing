@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Asana__search_objects",
+      "mcp__claude_ai_Asana__get_my_tasks"
+    ]
+  }
+}

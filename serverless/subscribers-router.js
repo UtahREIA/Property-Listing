@@ -267,7 +267,7 @@ async function handleSubscribe(req, res) {
   try { body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body; }
   catch (e) { return res.status(400).json({ message: 'Invalid JSON body' }); }
 
-  const { email } = body || {};
+  const { email, name, phone } = body || {};
   if (!email || !/^\S+@\S+\.\S+$/.test(email))
     return res.status(400).json({ message: 'Invalid email address' });
 
@@ -281,7 +281,11 @@ async function handleSubscribe(req, res) {
     .firstPage();
   if (existing?.length) return res.status(200).json({ message: 'Already subscribed' });
 
-  await base(SUBSCRIBERS_TABLE).create([{ fields: { Email: email, Subscribed: true } }]);
+  const fields = { Email: email, Subscribed: true };
+  if (name)  fields['Name']  = name;
+  if (phone) fields['Phone'] = phone;
+
+  await base(SUBSCRIBERS_TABLE).create([{ fields }]);
   return res.status(200).json({ message: 'Subscribed successfully' });
 }
 
