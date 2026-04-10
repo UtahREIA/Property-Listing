@@ -575,6 +575,21 @@
     .contact-msg.info    { background: #dbeafe; color: #1e40af; }
 
     .required-star { color: #dc2626; }
+    .contact-disclaimer {
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      background: #f9fafb;
+      border-radius: 6px;
+      border-left: 3px solid #d1d5db;
+    }
+    .contact-disclaimer a {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+    .contact-disclaimer a:hover { color: #1e40af; }
 
     /* ======== TAB SWITCHER ======== */
     .tab-bar {
@@ -738,6 +753,20 @@
     }
     .list-note-submit-btn:hover    { opacity: 0.92; }
     .list-note-submit-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+    .ln-tooltip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px; height: 16px;
+      background: #e0e7ff;
+      color: #3730a3;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: help;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
 
     /* ======== NOTE IMAGE UPLOAD ======== */
     .note-img-upload-grid {
@@ -821,6 +850,107 @@
     .note-contact-header h3 { font-size: 21px; font-weight: 700; margin: 0; }
     .note-contact-header p  { font-size: 14px; opacity: 0.85; margin: 5px 0 0; }
 
+    /* ======== FOOTER ======== */
+    .site-footer {
+      background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+      color: white;
+      margin-top: 60px;
+      padding: 50px 20px 30px;
+    }
+    .footer-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .footer-subscribe-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .footer-subscribe-sub {
+      font-size: 15px;
+      opacity: 0.85;
+      margin-bottom: 20px;
+    }
+    .footer-subscribe-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .footer-email-input {
+      padding: 11px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      width: 260px;
+      max-width: 100%;
+      outline: none;
+    }
+    .footer-email-input:focus { box-shadow: 0 0 0 3px rgba(255,255,255,0.3); }
+    .footer-subscribe-btn {
+      padding: 11px 24px;
+      background: white;
+      color: #1e40af;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .footer-subscribe-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .footer-unsubscribe-btn {
+      padding: 11px 20px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+    .footer-unsubscribe-btn:hover { border-color: white; }
+    .footer-subscribe-msg {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .footer-subscribe-msg.success { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+    .footer-subscribe-msg.error   { background: rgba(239,68,68,0.2);  color: #fca5a5; }
+    .footer-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      margin: 32px 0 24px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .footer-links a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: white; }
+    .footer-copy {
+      font-size: 12px;
+      opacity: 0.55;
+      line-height: 1.6;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .hero h1 { font-size: 32px; }
@@ -842,45 +972,6 @@
   <section class="hero">
     <h1>Off-Market Real Estate Deals for Investors in Utah</h1>
     <p>Browse investor-friendly properties, notes, and creative deals submitted by other local investors.</p>
-    <!-- Subscription Widget -->
-    <div style="margin: 24px auto 0 auto; text-align:center; max-width:350px;">
-      <label for="subscriberEmail1" style="font-weight:bold; color:#fff;">Subscribe for New Listings</label><br>
-      <input type="email" id="subscriberEmail1" placeholder="Enter your email address" required style="padding:8px; border-radius:6px; border:1px solid #ccc; margin-top:8px; width:220px; max-width:90%;">
-      <br>
-      <div style="display: flex; justify-content: center; gap: 10px; margin-top: 12px;">
-        <button style="padding:8px 18px; border-radius:6px; border:1px solid #fff; background:#fff; color:#6c47c7; font-weight:bold; cursor:pointer;"
-          onclick="
-            var email = document.getElementById('subscriberEmail1').value.trim();
-            var messageEl = document.getElementById('subscribeMessage1');
-            messageEl.style.display = 'none';
-            if (!email) { messageEl.textContent = 'Please enter your email address.'; messageEl.style.display = 'block'; return; }
-            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) { messageEl.textContent = 'Please enter a valid email address.'; messageEl.style.display = 'block'; return; }
-            fetch('https://property-listing-32ax.vercel.app/api/subscribe', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email })
-            })
-            .then(function(response) { return response.json().then(function(result) { return { ok: response.ok, result }; }); })
-            .then(function(res) {
-              if (!res.ok) throw new Error(res.result.message || 'Subscription failed.');
-              messageEl.textContent = '✅ Subscribed! You will receive email notifications for new listings.';
-              messageEl.style.display = 'block';
-              document.getElementById('subscriberEmail1').value = '';
-            })
-            .catch(function(err) {
-              messageEl.textContent = err.message || 'Subscription failed. Please try again.';
-              messageEl.style.display = 'block';
-            });
-          ">Subscribe</button>
-        <a href="https://utahreia.org/unsubscribe" style="padding:8px 18px; border-radius:6px; border:1px solid #dc2626; background:#dc2626; color:#fff; font-weight:bold; cursor:pointer; display:inline-block; text-decoration:none;">Unsubscribe</a>
-      </div>
-      <div id="subscribeMessage1" style="display:none; color:#fff; margin-top:10px;"></div>
-    </div>
-    <div class="hero-buttons" style="margin-top:32px;">
-      <a href="#properties" class="btn btn-primary">Browse Properties</a>
-      <a href="https://utahreia.org/add-property-page" class="btn btn-secondary">List Your Property</a>
-    </div>
   </section>
 
   <!-- Tab Bar -->
@@ -947,7 +1038,10 @@
         </div>
 
       </div>
-      <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <button class="filter-btn" onclick="applyFilters()">Apply Filters</button>
+        <a href="https://utahreia.org/add-property-page" class="list-note-btn" style="text-decoration:none;">+ List Your Property</a>
+      </div>
     </div>
 
     <!-- Loading / Error / No Results -->
@@ -1029,6 +1123,30 @@
     </div>
   </div><!-- end #notesTab -->
 
+  <!-- ======== FOOTER ======== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-subscribe">
+        <h3 class="footer-subscribe-title">📬 Subscribe for New Listings</h3>
+        <p class="footer-subscribe-sub">Get notified by email whenever a new property or note is listed.</p>
+        <div class="footer-subscribe-row">
+          <input type="email" id="footerSubscriberEmail" placeholder="Enter your email address" class="footer-email-input">
+          <button class="footer-subscribe-btn" onclick="handleFooterSubscribe()">Subscribe</button>
+          <a href="https://utahreia.org/unsubscribe" class="footer-unsubscribe-btn">Unsubscribe</a>
+        </div>
+        <div id="footerSubscribeMsg" class="footer-subscribe-msg" style="display:none;"></div>
+      </div>
+      <hr class="footer-divider">
+      <div class="footer-links">
+        <a href="https://utahreia.org" target="_blank" rel="noopener">Utah REIA</a>
+        <a href="https://utahreia.org/add-property-page" target="_blank" rel="noopener">List a Property</a>
+        <a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank" rel="noopener">Legal Disclaimer</a>
+        <a href="https://utahreia.org/unsubscribe" target="_blank" rel="noopener">Unsubscribe</a>
+      </div>
+      <p class="footer-copy">&copy; 2025 Utah REIA. All information provided for informational purposes only. Not investment advice.</p>
+    </div>
+  </footer>
+
   <!-- ======== NOTE DETAIL MODAL ======== -->
   <div id="noteModal" class="modal">
     <div class="modal-content" style="max-width:820px;">
@@ -1064,6 +1182,11 @@
           <label>Message <span class="required-star">*</span></label>
           <textarea id="noteContactMessage" placeholder="Hi, I'm interested in this note. I'd like to know more about the payment history, property condition, and your motivation for selling..."></textarea>
         </div>
+        <p class="contact-disclaimer">
+          By submitting this inquiry you acknowledge that you have read and agree to the
+          <a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank" rel="noopener">Utah REIA Legal Disclaimer</a>.
+          All information is provided for informational purposes only and does not constitute investment advice.
+        </p>
         <button class="contact-send-btn" id="noteContactSendBtn" onclick="submitNoteContactForm()">
           Send Inquiry
         </button>
@@ -1083,14 +1206,23 @@
       <div class="list-note-form-body">
         <form id="listNoteForm" onsubmit="submitListNote(event)">
 
-          <!-- Financial Details -->
+          <!-- Note Details -->
           <div class="list-note-section">
             <h4>Note Details</h4>
             <div class="contact-form-group">
               <label>Listing Title <span class="required-star">*</span></label>
               <input type="text" id="lnTitle" placeholder="e.g. Performing 1st Position Note – Salt Lake City, UT" required>
             </div>
-            <div class="list-note-grid-2">
+            <div class="list-note-grid-3">
+              <div class="contact-form-group">
+                <label>Note Type</label>
+                <select id="lnNoteType">
+                  <option value="">Select…</option>
+                  <option value="Deed of Trust">Deed of Trust</option>
+                  <option value="Contract For Deed (CFD)">Contract For Deed (CFD)</option>
+                  <option value="Mortgage">Mortgage</option>
+                </select>
+              </div>
               <div class="contact-form-group">
                 <label>Note Position</label>
                 <select id="lnNotePosition">
@@ -1108,6 +1240,24 @@
                   <option value="Non-Performing">Non-Performing</option>
                   <option value="Sub-Performing">Sub-Performing</option>
                   <option value="Re-Performing">Re-Performing</option>
+                </select>
+              </div>
+            </div>
+            <div class="list-note-grid-3">
+              <div class="contact-form-group">
+                <label>Term (months)</label>
+                <input type="number" id="lnTerm" placeholder="e.g. 360" min="1">
+              </div>
+              <div class="contact-form-group">
+                <label>Balloon (months)</label>
+                <input type="number" id="lnBalloon" placeholder="e.g. 60" min="1">
+              </div>
+              <div class="contact-form-group">
+                <label>Substitution of Collateral</label>
+                <select id="lnSubstitution">
+                  <option value="">Select…</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
                 </select>
               </div>
             </div>
@@ -1140,6 +1290,14 @@
               <div class="contact-form-group">
                 <label>LTV (%)</label>
                 <input type="number" id="lnLTV" placeholder="65.0" step="0.1" min="0" max="200">
+              </div>
+              <div class="contact-form-group">
+                <label>ITB (%) <span class="ln-tooltip" title="Investment-to-Basis: your investment ÷ seller's/borrower's basis in the asset. Shows how protected your position is relative to what's in the deal.">ⓘ</span></label>
+                <input type="number" id="lnITB" placeholder="e.g. 84" step="0.1" min="0" max="200">
+              </div>
+              <div class="contact-form-group">
+                <label>ITV (%) <span class="ln-tooltip" title="Investment-to-Value: your investment ÷ current property value. Lower % = more value cushion. e.g. $10k on a $20k property = 50% ITV.">ⓘ</span></label>
+                <input type="number" id="lnITV" placeholder="e.g. 50" step="0.1" min="0" max="200">
               </div>
             </div>
             <div class="list-note-grid-2">
@@ -1299,6 +1457,11 @@
           <label>Message <span class="required-star">*</span></label>
           <textarea id="contactMessage" placeholder="Hi, I'm interested in this property. I'd like to learn more about..."></textarea>
         </div>
+        <p class="contact-disclaimer">
+          By submitting this message you acknowledge that you have read and agree to the
+          <a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank" rel="noopener">Utah REIA Legal Disclaimer</a>.
+          All information is provided for informational purposes only and does not constitute investment advice.
+        </p>
         <button class="contact-send-btn" id="contactSendBtn" onclick="submitContactForm()">
           Send Message
         </button>
@@ -1369,6 +1532,41 @@
   </div>
 
   <script>
+    // ── Footer subscribe ─────────────────────────────────────────
+    function handleFooterSubscribe() {
+      const email   = document.getElementById('footerSubscriberEmail').value.trim();
+      const msgEl   = document.getElementById('footerSubscribeMsg');
+      msgEl.style.display = 'none';
+      msgEl.className = 'footer-subscribe-msg';
+
+      if (!email) {
+        msgEl.textContent = 'Please enter your email address.';
+        msgEl.classList.add('error'); msgEl.style.display = 'inline-block'; return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        msgEl.textContent = 'Please enter a valid email address.';
+        msgEl.classList.add('error'); msgEl.style.display = 'inline-block'; return;
+      }
+
+      fetch('https://property-listing-32ax.vercel.app/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
+      .then(r => r.json().then(result => ({ ok: r.ok, result })))
+      .then(({ ok, result }) => {
+        if (!ok) throw new Error(result.message || 'Subscription failed.');
+        msgEl.textContent = '✅ Subscribed! You will receive email notifications for new listings.';
+        msgEl.classList.add('success'); msgEl.style.display = 'inline-block';
+        document.getElementById('footerSubscriberEmail').value = '';
+      })
+      .catch(err => {
+        msgEl.textContent = err.message || 'Subscription failed. Please try again.';
+        msgEl.classList.add('error'); msgEl.style.display = 'inline-block';
+      });
+    }
+
     // API Configuration
     const API_CONFIG = {
       getPropertiesUrl:          'https://property-listing-32ax.vercel.app/api/get-properties',
@@ -2232,15 +2430,22 @@
           ${n.Status ? `<div class="property-status ${{ 'Available':'status-available','Under Contract':'status-pending','Sold':'status-sold' }[n.Status] || 'status-available'}" style="display:inline-block;margin-bottom:20px;">${n.Status}</div>` : ''}
 
           <div class="note-stats-grid">
+            <div class="note-detail-stat"><span class="nds-label">Asking Price</span><span class="nds-val" style="color:#1e40af;">${formatPrice(n['Asking Price'])}</span></div>
             <div class="note-detail-stat"><span class="nds-label">Unpaid Balance (UPB)</span><span class="nds-val">${formatPrice(n['Current Balance'])}</span></div>
             <div class="note-detail-stat"><span class="nds-label">Original Balance</span><span class="nds-val">${formatPrice(n['Original Balance'])}</span></div>
             <div class="note-detail-stat"><span class="nds-label">Interest Rate</span><span class="nds-val">${n['Interest Rate'] ? n['Interest Rate'] + '%' : '—'}</span></div>
             <div class="note-detail-stat"><span class="nds-label">Monthly Payment</span><span class="nds-val">${formatPrice(n['Monthly Payment'])}</span></div>
             <div class="note-detail-stat"><span class="nds-label">LTV</span><span class="nds-val">${n['LTV'] ? n['LTV'] + '%' : '—'}</span></div>
+            ${n['Note Type']         ? `<div class="note-detail-stat"><span class="nds-label">Note Type</span><span class="nds-val">${n['Note Type']}</span></div>` : ''}
+            ${n['Term']              ? `<div class="note-detail-stat"><span class="nds-label">Term</span><span class="nds-val">${n['Term']} mo</span></div>` : ''}
+            ${n['Balloon']           ? `<div class="note-detail-stat"><span class="nds-label">Balloon</span><span class="nds-val">${n['Balloon']} mo</span></div>` : ''}
             <div class="note-detail-stat"><span class="nds-label">Property Type</span><span class="nds-val">${n['Property Type'] || '—'}</span></div>
             ${n['Maturity Date']     ? `<div class="note-detail-stat"><span class="nds-label">Maturity Date</span><span class="nds-val">${n['Maturity Date']}</span></div>` : ''}
             ${n['Months Remaining']  ? `<div class="note-detail-stat"><span class="nds-label">Months Remaining</span><span class="nds-val">${n['Months Remaining']} mo</span></div>` : ''}
             ${n['Origination Date']  ? `<div class="note-detail-stat"><span class="nds-label">Origination Date</span><span class="nds-val">${n['Origination Date']}</span></div>` : ''}
+            ${n['ITB']               ? `<div class="note-detail-stat"><span class="nds-label" title="Investment-to-Basis: your investment vs. the seller's/borrower's basis in the asset.">ITB ⓘ</span><span class="nds-val">${n['ITB']}%</span></div>` : ''}
+            ${n['ITV']               ? `<div class="note-detail-stat"><span class="nds-label" title="Investment-to-Value: your investment ÷ current property value. Lower % = more value cushion.">ITV ⓘ</span><span class="nds-val">${n['ITV']}%</span></div>` : ''}
+            ${n['Substitution of Collateral'] !== undefined && n['Substitution of Collateral'] !== null ? `<div class="note-detail-stat"><span class="nds-label">Subst. of Collateral</span><span class="nds-val">${n['Substitution of Collateral'] ? 'Yes' : 'No'}</span></div>` : ''}
             ${yieldStat}${discount}
           </div>
 
@@ -2638,12 +2843,18 @@
         currentBalance:    parseCurrencyInput('lnCurrentBalance'),
         monthlyPayment:    parseCurrencyInput('lnMonthlyPayment'),
         interestRate:      get('lnInterestRate') || null,
-        notePosition:      get('lnNotePosition'),
-        performanceStatus: get('lnPerfStatus'),
-        propertyType:      get('lnPropertyType'),
-        propertyAddress:   get('lnPropertyAddress'),
-        state:             get('lnState'),
-        ltv:               get('lnLTV') || null,
+        noteType:                  get('lnNoteType'),
+        notePosition:              get('lnNotePosition'),
+        performanceStatus:         get('lnPerfStatus'),
+        term:                      get('lnTerm') || null,
+        balloon:                   get('lnBalloon') || null,
+        substitutionOfCollateral:  get('lnSubstitution') === 'Yes',
+        itb:                       get('lnITB') || null,
+        itv:                       get('lnITV') || null,
+        propertyType:              get('lnPropertyType'),
+        propertyAddress:           get('lnPropertyAddress'),
+        state:                     get('lnState'),
+        ltv:                       get('lnLTV') || null,
         maturityDate:      get('lnMaturityDate'),
         originationDate:   get('lnOriginationDate'),
         description:       get('lnDescription'),

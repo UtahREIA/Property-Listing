@@ -15,6 +15,7 @@ module.exports = async (req, res) => {
     const fields = [
       'Title', 'Asking Price', 'Original Balance', 'Current Balance',
       'Interest Rate', 'Monthly Payment', 'Note Position', 'Performance Status',
+      'Note Type', 'Term', 'Balloon', 'Substitution of Collateral', 'ITB', 'ITV',
       'Property Type', 'Property Address', 'State', 'LTV',
       'Maturity Date', 'Origination Date', 'Months Remaining',
       'Status', 'Description', 'Images', 'Documents',

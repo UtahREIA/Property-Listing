@@ -15,6 +15,7 @@ module.exports = async (req, res) => {
     const {
       title, askingPrice, originalBalance, currentBalance,
       interestRate, monthlyPayment, notePosition, performanceStatus,
+      noteType, term, balloon, substitutionOfCollateral, itb, itv,
       propertyType, propertyAddress, state, ltv,
       maturityDate, originationDate, status, description,
       contactName, contactEmail, contactPhone,
@@ -50,14 +51,26 @@ module.exports = async (req, res) => {
     if (monthlyPayment)   fields['Monthly Payment']   = parseFloat(monthlyPayment);
     if (ltv)              fields['LTV']                = parseFloat(ltv);
 
-    // Optional text fields
+    // Optional numeric fields — new
+    if (term)    fields['Term']    = parseInt(term);
+    if (balloon) fields['Balloon'] = parseInt(balloon);
+    if (itb)     fields['ITB']     = parseFloat(itb);
+    if (itv)     fields['ITV']     = parseFloat(itv);
+
+    // Optional text / select fields
     if (notePosition)     fields['Note Position']     = notePosition;
+    if (noteType)         fields['Note Type']          = noteType;
     if (propertyType)     fields['Property Type']     = propertyType;
     if (propertyAddress)  fields['Property Address']  = propertyAddress;
     if (state)            fields['State']              = state.toUpperCase();
     if (description)      fields['Description']       = description;
     if (maturityDate)     fields['Maturity Date']     = maturityDate;
     if (originationDate)  fields['Origination Date']  = originationDate;
+
+    // Checkbox field — Airtable expects a boolean
+    if (substitutionOfCollateral !== undefined) {
+      fields['Substitution of Collateral'] = substitutionOfCollateral === true || substitutionOfCollateral === 'true' || substitutionOfCollateral === 'Yes';
+    }
 
     // Airtable attachment fields require an array of { url } objects
     if (Array.isArray(imageUrls) && imageUrls.length > 0) {
