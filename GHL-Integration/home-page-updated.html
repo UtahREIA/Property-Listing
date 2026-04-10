@@ -625,6 +625,46 @@
     }
     .contact-disclaimer a:hover { color: #1e40af; }
 
+    /* ======== LISTING PAGE FOOTER NOTICE ======== */
+    .footer-page-notice-wrap {
+      background: #f4f7fb;
+      padding: 22px 20px;
+    }
+    .footer-page-notice {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: #ffffff;
+      border: 1px solid #dce6f4;
+      border-left: 4px solid #2E5C8A;
+      border-radius: 8px;
+      font-size: 0.83rem;
+      color: #374151;
+      line-height: 1.65;
+      font-family: Arial, sans-serif;
+      box-shadow: 0 1px 4px rgba(46,92,138,0.07);
+    }
+    .footer-page-notice .fpn-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+      opacity: 0.85;
+    }
+    .footer-page-notice strong { color: #1e3a5f; }
+    .footer-page-notice a {
+      color: #2E5C8A;
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 1px solid #a8c4de;
+    }
+    .footer-page-notice a:hover {
+      color: #1e3a5f;
+      border-bottom-color: #2E5C8A;
+    }
+
     /* ======== TAB SWITCHER ======== */
     .tab-bar {
       display: flex;
@@ -1158,13 +1198,15 @@
   </div><!-- end #notesTab -->
 
   <!-- ======== LISTING PAGE FOOTER NOTICE ======== -->
-  <div style="background:#f4f6fb;border-top:3px solid #2E5C8A;padding:14px 20px;display:flex;align-items:flex-start;gap:12px;font-size:0.82rem;color:#555;font-family:Arial,sans-serif;">
-    <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px;">ℹ️</span>
-    <span>
-      <strong>Utah REIA is a marketplace only.</strong>
-      All due diligence, property or note selection, and purchasing decisions are the sole responsibility of the buyer. All money transfers must be independently verified by both buyer and seller before closing. Utah REIA is not a broker, lender, or investment advisor and is not a party to any transaction.
-      &nbsp;<a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank" style="color:#2E5C8A;font-weight:600;">Read Full Disclaimer →</a>
-    </span>
+  <div class="footer-page-notice-wrap">
+    <div class="footer-page-notice">
+      <span class="fpn-icon">ℹ️</span>
+      <span>
+        <strong>Utah REIA is a marketplace only.</strong>
+        All due diligence, property or note selection, and purchasing decisions are the sole responsibility of the buyer. All money transfers must be independently verified by both buyer and seller before closing. Utah REIA is not a broker, lender, or investment advisor and is not a party to any transaction.
+        &nbsp;<a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank">Read Full Disclaimer →</a>
+      </span>
+    </div>
   </div>
 
   <!-- ======== FOOTER ======== -->
