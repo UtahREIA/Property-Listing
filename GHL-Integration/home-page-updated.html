@@ -575,6 +575,39 @@
     .contact-msg.info    { background: #dbeafe; color: #1e40af; }
 
     .required-star { color: #dc2626; }
+
+    /* ======== WIRE FRAUD BANNER ======== */
+    .wire-fraud-banner {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: #fff8e1;
+      border: 2px solid #f59e0b;
+      padding: 14px 18px;
+      font-family: Arial, sans-serif;
+    }
+    .wire-fraud-icon { font-size: 1.5rem; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+    .wire-fraud-title { font-size: 0.92rem; font-weight: 700; color: #7c4700; margin-bottom: 5px; }
+    .wire-fraud-body { font-size: 0.8rem; color: #5a3e00; line-height: 1.55; }
+    .wire-fraud-body a { color: #7c4700; font-weight: 600; }
+
+    /* ======== COMPACT INLINE LISTING NOTICE ======== */
+    .listing-inline-notice {
+      background: #eef4fb;
+      border: 1px solid #c3d7ef;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: #2E5C8A;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-family: Arial, sans-serif;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .listing-inline-notice a { color: #1F3864; font-weight: 700; text-decoration: none; }
+    .listing-inline-notice a:hover { text-decoration: underline; }
     .contact-disclaimer {
       font-size: 12px;
       color: #4b5563;
@@ -1124,6 +1157,16 @@
     </div>
   </div><!-- end #notesTab -->
 
+  <!-- ======== LISTING PAGE FOOTER NOTICE ======== -->
+  <div style="background:#f4f6fb;border-top:3px solid #2E5C8A;padding:14px 20px;display:flex;align-items:flex-start;gap:12px;font-size:0.82rem;color:#555;font-family:Arial,sans-serif;">
+    <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px;">ℹ️</span>
+    <span>
+      <strong>Utah REIA is a marketplace only.</strong>
+      All due diligence, property or note selection, and purchasing decisions are the sole responsibility of the buyer. All money transfers must be independently verified by both buyer and seller before closing. Utah REIA is not a broker, lender, or investment advisor and is not a party to any transaction.
+      &nbsp;<a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank" style="color:#2E5C8A;font-weight:600;">Read Full Disclaimer →</a>
+    </span>
+  </div>
+
   <!-- ======== FOOTER ======== -->
   <footer class="site-footer">
     <div class="footer-inner">
@@ -1148,6 +1191,40 @@
     </div>
   </footer>
 
+  <!-- ======== REGISTRATION ACCEPTANCE MODAL ======== -->
+  <div id="reiaTermsModal" style="display:none;position:fixed;inset:0;background:rgba(10,20,50,0.55);align-items:center;justify-content:center;z-index:9999;font-family:Arial,sans-serif;">
+    <div style="background:#fff;border-radius:10px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden;margin:20px;">
+      <div style="background:linear-gradient(135deg,#1F3864,#2E5C8A);padding:20px 24px;color:#fff;">
+        <h3 style="font-size:1rem;font-weight:700;margin:0 0 4px;">Platform Terms &amp; Disclaimer</h3>
+        <p style="font-size:0.78rem;opacity:0.8;margin:0;">Please review and accept before sending your inquiry</p>
+      </div>
+      <div style="padding:20px 24px;">
+        <div style="background:#f4f6fb;border-radius:6px;padding:14px 16px;margin-bottom:16px;font-size:0.83rem;color:#444;">
+          <strong>By sending an inquiry, you agree that:</strong>
+          <ul style="padding-left:18px;margin-top:8px;">
+            <li>Utah REIA is a marketplace only — not a broker, lender, or advisor</li>
+            <li>All due diligence and purchasing decisions are your sole responsibility</li>
+            <li>All money transfers must be verified independently by both parties</li>
+            <li>Utah REIA is not a party to any transaction and bears no liability</li>
+          </ul>
+        </div>
+        <a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank" style="display:block;text-align:center;font-size:0.8rem;color:#2E5C8A;text-decoration:none;margin-bottom:18px;">📄 Read the Full Disclaimer &amp; Terms of Use →</a>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;font-size:0.85rem;color:#333;">
+          <input type="checkbox" id="reiaCb1" style="margin-top:3px;width:16px;height:16px;cursor:pointer;flex-shrink:0;" onchange="checkReiaBoxes()">
+          <label for="reiaCb1" style="cursor:pointer;">I have read and agree to the <a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank" style="color:#2E5C8A;">Utah REIA Platform Disclaimer and Terms of Use</a>. I understand that Utah REIA is a marketplace only and that all due diligence and transaction decisions are my sole responsibility.</label>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;font-size:0.85rem;color:#333;">
+          <input type="checkbox" id="reiaCb2" style="margin-top:3px;width:16px;height:16px;cursor:pointer;flex-shrink:0;" onchange="checkReiaBoxes()">
+          <label for="reiaCb2" style="cursor:pointer;">By providing my contact information, I agree to receive text messages, emails, and phone calls from Utah REIA, including calls that may be automated or use an AI-generated voice. These communications may include event updates, educational resources, and marketing messages. I can opt out at any time by replying STOP to texts or following unsubscribe instructions in emails.</label>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button id="reiaAcceptBtn" disabled onclick="onReiaAccept()" style="flex:1;background:#1F3864;color:#fff;border:none;padding:11px;border-radius:6px;font-size:0.88rem;font-weight:600;cursor:pointer;opacity:0.45;transition:opacity 0.2s;">Accept &amp; Send</button>
+          <button onclick="closeReiaModal()" style="background:#fff;color:#888;border:1px solid #ccc;padding:11px 16px;border-radius:6px;font-size:0.88rem;cursor:pointer;">Decline</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ======== NOTE DETAIL MODAL ======== -->
   <div id="noteModal" class="modal">
     <div class="modal-content" style="max-width:820px;">
@@ -1163,6 +1240,13 @@
       <div class="note-contact-header">
         <h3>📋 Inquire About This Note</h3>
         <p id="noteContactModalTitle">Send a message to the note seller</p>
+      </div>
+      <div class="wire-fraud-banner">
+        <span class="wire-fraud-icon">🚨</span>
+        <div>
+          <div class="wire-fraud-title">Wire Fraud Warning</div>
+          <div class="wire-fraud-body"><strong>Never wire funds based solely on instructions received through this platform, email, or text.</strong> Criminals impersonate real estate sellers and investors to redirect wire transfers. Before sending <em>any</em> money, call the seller at a number you independently verified, confirm all wiring instructions verbally, and be suspicious of any last-minute changes. Utah REIA will never instruct you to wire funds. Suspect fraud? Contact the FBI at <a href="https://ic3.gov" target="_blank">ic3.gov</a>.</div>
+        </div>
       </div>
       <div class="contact-form-body">
         <div class="contact-form-row">
@@ -1439,6 +1523,13 @@
         <h3>✉️ Contact the Listing Owner</h3>
         <p id="contactModalPropertyName">Send a message about this property</p>
       </div>
+      <div class="wire-fraud-banner">
+        <span class="wire-fraud-icon">🚨</span>
+        <div>
+          <div class="wire-fraud-title">Wire Fraud Warning</div>
+          <div class="wire-fraud-body"><strong>Never wire funds based solely on instructions received through this platform, email, or text.</strong> Criminals impersonate real estate sellers and investors to redirect wire transfers. Before sending <em>any</em> money, call the seller at a number you independently verified, confirm all wiring instructions verbally, and be suspicious of any last-minute changes. Utah REIA will never instruct you to wire funds. Suspect fraud? Contact the FBI at <a href="https://ic3.gov" target="_blank">ic3.gov</a>.</div>
+        </div>
+      </div>
       <div class="contact-form-body">
         <div class="contact-form-row">
           <div class="contact-form-group">
@@ -1533,6 +1624,46 @@
   </div>
 
   <script>
+    // ── Registration Acceptance Modal ────────────────────────────
+    let _reiaOnAccept = null; // stores the callback to run after acceptance
+
+    function openReiaModal(onAcceptCallback) {
+      _reiaOnAccept = onAcceptCallback;
+      // Reset checkboxes and button each time
+      document.getElementById('reiaCb1').checked = false;
+      document.getElementById('reiaCb2').checked = false;
+      const btn = document.getElementById('reiaAcceptBtn');
+      btn.disabled = true;
+      btn.style.opacity = '0.45';
+      btn.style.cursor  = 'not-allowed';
+      const modal = document.getElementById('reiaTermsModal');
+      modal.style.display = 'flex';
+    }
+
+    function closeReiaModal() {
+      document.getElementById('reiaTermsModal').style.display = 'none';
+      _reiaOnAccept = null;
+    }
+
+    function checkReiaBoxes() {
+      const both = document.getElementById('reiaCb1').checked &&
+                   document.getElementById('reiaCb2').checked;
+      const btn  = document.getElementById('reiaAcceptBtn');
+      btn.disabled      = !both;
+      btn.style.opacity = both ? '1'            : '0.45';
+      btn.style.cursor  = both ? 'pointer'      : 'not-allowed';
+    }
+
+    function onReiaAccept() {
+      closeReiaModal();
+      if (typeof _reiaOnAccept === 'function') _reiaOnAccept();
+    }
+
+    // Close on backdrop click
+    document.getElementById('reiaTermsModal').addEventListener('click', function(e) {
+      if (e.target === this) closeReiaModal();
+    });
+
     // ── Footer subscribe ─────────────────────────────────────────
     function handleFooterSubscribe() {
       const email   = document.getElementById('footerSubscriberEmail').value.trim();
@@ -1766,6 +1897,7 @@
       const modalHTML = `
         ${imageSliderHTML}
         <div class="modal-body">
+          <div class="listing-inline-notice">⚠️ Listings are posted by independent sellers. Utah REIA does not verify listings or act as a broker, lender, or advisor. Buyer assumes all due diligence responsibility. <a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank">Full Disclaimer</a></div>
           <div style="display:inline-block;background:#f3f4f6;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;color:#6b7280;font-family:monospace;margin-bottom:15px;">Property ID: ${property.id}</div>
           <div class="modal-title">${property.Title || 'Untitled Property'}</div>
           <div class="modal-price">${formatPrice(property.Price)}</div>
@@ -1902,6 +2034,11 @@
     let contactRecipientEmail = null;
 
     function openContactModal(propertyId, propertyTitle, recipientEmail) {
+      // Show acceptance modal first; open the contact form only after acceptance
+      openReiaModal(() => _doOpenContactModal(propertyId, propertyTitle, recipientEmail));
+    }
+
+    function _doOpenContactModal(propertyId, propertyTitle, recipientEmail) {
       contactPropertyId    = propertyId;
       contactPropertyTitle = propertyTitle;
       contactRecipientEmail = recipientEmail;
@@ -2424,6 +2561,7 @@
           ${imageSliderHTML}
         </div>
         <div class="modal-body">
+          <div class="listing-inline-notice">⚠️ Listings are posted by independent sellers. Utah REIA does not verify listings or act as a broker, lender, or advisor. Buyer assumes all due diligence responsibility. <a href="https://utahreia.org/property-listing-legal-disclaimer" target="_blank">Full Disclaimer</a></div>
           <div style="display:inline-block;background:#f3f4f6;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;color:#6b7280;font-family:monospace;margin-bottom:12px;">Note ID: ${n.id}</div>
           <div class="modal-title">${n.Title || 'Untitled Note'}</div>
           <div style="font-size:34px;font-weight:800;color:#1e40af;margin-bottom:6px;">${formatPrice(n['Asking Price'])}</div>
@@ -2524,6 +2662,11 @@
     let noteContactId = null, noteContactTitle = null, noteContactEmail = null;
 
     function openNoteContactModal(id, title, email) {
+      // Show acceptance modal first; open the inquiry form only after acceptance
+      openReiaModal(() => _doOpenNoteContactModal(id, title, email));
+    }
+
+    function _doOpenNoteContactModal(id, title, email) {
       noteContactId    = id;
       noteContactTitle = title;
       noteContactEmail = email;
