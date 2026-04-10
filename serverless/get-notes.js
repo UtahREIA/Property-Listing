@@ -12,19 +12,8 @@ module.exports = async (req, res) => {
   if (req.method !== 'GET')     return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const fields = [
-      'Title', 'Asking Price', 'Original Balance', 'Current Balance',
-      'Interest Rate', 'Monthly Payment', 'Note Position', 'Performance Status',
-      'Note Type', 'Term', 'Balloon', 'Substitution of Collateral', 'ITB', 'ITV',
-      'Property Type', 'Property Address', 'State', 'LTV',
-      'Maturity Date', 'Origination Date', 'Months Remaining',
-      'Status', 'Description', 'Images', 'Documents',
-      "Contact's Name", "Contact's Email", "Contact's Phone Number",
-      'Date Listed', 'Yield', 'Discount',
-    ];
-
-    const fieldParams = fields.map(f => `fields%5B%5D=${encodeURIComponent(f)}`).join('&');
-    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}?maxRecords=100&${fieldParams}`;
+    // Fetch all fields — avoids 500 errors if optional fields don't exist in the table yet
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}?maxRecords=100`;
 
     const response = await fetch(url, {
       headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` },
