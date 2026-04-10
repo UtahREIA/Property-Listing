@@ -2508,8 +2508,8 @@
       getNotesUrl:            'https://property-listing-32ax.vercel.app/api/get-notes',
       addNoteUrl:             'https://property-listing-32ax.vercel.app/api/add-note',
       contactNoteUrl:         'https://property-listing-32ax.vercel.app/api/contact-note',
-      updateNoteStatusUrl:    'https://property-listing-32ax.vercel.app/api/update-note-status',
-      deleteNoteUrl:          'https://property-listing-32ax.vercel.app/api/delete-note',
+      updateNoteStatusUrl:    'https://property-listing-32ax.vercel.app/api/update-property-status',
+      deleteNoteUrl:          'https://property-listing-32ax.vercel.app/api/delete-property',
       getNoteContactEmailUrl: 'https://property-listing-32ax.vercel.app/api/get-note-contact-email',
     };
 
@@ -3250,7 +3250,7 @@
         const r = await fetch(NOTES_API.updateNoteStatusUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ recordId: currentNoteId, status: newStatus }),
+          body: JSON.stringify({ recordId: currentNoteId, status: newStatus, type: 'note' }),
         });
         const d = await r.json();
         if (r.ok && d.success) {
@@ -3271,7 +3271,7 @@
         const r = await fetch(NOTES_API.deleteNoteUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ recordId: currentNoteId }),
+          body: JSON.stringify({ recordId: currentNoteId, type: 'note' }),
         });
         const d = await r.json();
         if (r.ok && d.success) {
