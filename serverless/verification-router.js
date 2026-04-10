@@ -118,6 +118,29 @@ async function handleGetContactEmail(req, res) {
   }
 }
 
+async function handleGetNoteContactEmail(req, res) {
+  const noteId = req.query.noteId;
+  if (!noteId) return res.status(400).json({ error: 'Note ID required' });
+
+  const AIRTABLE_API_KEY = process.env.AIRTABLE_NOTE_API_KEY;
+  const AIRTABLE_BASE_ID = process.env.AIRTABLE_NOTE_BASE_ID;
+  try {
+    const response = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Notes/${noteId}`,
+      { headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` } }
+    );
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'Failed to fetch note');
+    }
+    const data = await response.json();
+    return res.status(200).json({ contactEmail: data.fields["Contact's Email"] });
+  } catch (err) {
+    console.error('Get note contact email error:', err);
+    return res.status(500).json({ error: 'Failed to fetch note contact email', message: err.message });
+  }
+}
+
 // Detect which endpoint is being called based on the request URL path
 function detectAction(req) {
   const url = req.url || '';
@@ -126,6 +149,7 @@ function detectAction(req) {
   if (url.includes('send-verification-code') || action === 'send-code') return 'send-code';
   if (url.includes('verify-code') || action === 'verify-code') return 'verify-code';
   if (url.includes('get-property-contact-email') || action === 'get-contact-email') return 'get-contact-email';
+  if (url.includes('get-note-contact-email') || action === 'get-note-contact-email') return 'get-note-contact-email';
   return null;
 }
 
@@ -138,8 +162,9 @@ module.exports = async (req, res) => {
   if (action === 'send-code' && req.method === 'POST') return handleSendCode(req, res);
   if (action === 'verify-code' && req.method === 'POST') return handleVerifyCode(req, res);
   if (action === 'get-contact-email' && req.method === 'GET') return handleGetContactEmail(req, res);
+  if (action === 'get-note-contact-email' && req.method === 'GET') return handleGetNoteContactEmail(req, res);
 
   return res.status(400).json({
-    error: 'Unknown endpoint. Supported: /api/send-verification-code, /api/verify-code, /api/get-property-contact-email'
+    error: 'Unknown endpoint. Supported: /api/send-verification-code, /api/verify-code, /api/get-property-contact-email, /api/get-note-contact-email'
   });
 };

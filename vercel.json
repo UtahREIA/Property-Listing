@@ -25,9 +25,12 @@
     { "src": "/api/daily-digest",             "dest": "serverless/subscribers-router.js" },
     { "src": "/api/subscribers(.*)",          "dest": "serverless/subscribers-router.js" },
 
-    { "src": "/api/get-notes",               "dest": "serverless/get-notes.js" },
-    { "src": "/api/add-note",                "dest": "serverless/add-note.js" },
-    { "src": "/api/contact-note",            "dest": "serverless/contact-note.js" }
+    { "src": "/api/get-notes",                  "dest": "serverless/get-notes.js" },
+    { "src": "/api/add-note",                   "dest": "serverless/add-note.js" },
+    { "src": "/api/contact-note",               "dest": "serverless/contact-note.js" },
+    { "src": "/api/update-note-status",         "dest": "serverless/update-note-status.js" },
+    { "src": "/api/delete-note",                "dest": "serverless/delete-note.js" },
+    { "src": "/api/get-note-contact-email",     "dest": "serverless/verification-router.js" }
   ],
   "crons": [
     {
