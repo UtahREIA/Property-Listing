@@ -94,6 +94,21 @@ module.exports = async (req, res) => {
     }
 
     const data = await response.json();
+
+    // Notify subscribers in the background — don't let a failure block the response
+    try {
+      const notifyUrl = `${process.env.VERCEL_URL
+        ? 'https://' + process.env.VERCEL_URL
+        : 'https://property-listing-32ax.vercel.app'}/api/notify-note`;
+      fetch(notifyUrl, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ note: fields }),
+      }).catch(e => console.warn('Note notify failed (non-blocking):', e.message));
+    } catch (e) {
+      console.warn('Could not trigger note notification:', e.message);
+    }
+
     return res.status(201).json({
       success: true,
       message: 'Note listed successfully',

@@ -22,6 +22,7 @@
 
     { "src": "/api/subscribe(.*)",            "dest": "serverless/subscribers-router.js" },
     { "src": "/api/notify-subscribers",       "dest": "serverless/subscribers-router.js" },
+    { "src": "/api/notify-note",              "dest": "serverless/subscribers-router.js" },
     { "src": "/api/daily-digest",             "dest": "serverless/subscribers-router.js" },
     { "src": "/api/subscribers(.*)",          "dest": "serverless/subscribers-router.js" },
 
@@ -34,6 +35,10 @@
     {
       "path": "/api/subscribers?action=daily-digest",
       "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/check-property-expiration",
+      "schedule": "0 9 * * *"
     }
   ]
 }
