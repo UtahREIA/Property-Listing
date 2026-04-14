@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utah REIA — Property &amp; Notes Marketplace Documentation</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',Arial,sans-serif; font-size:13px; color:#1f2937; background:#fff; line-height:1.6; }
+
+    @media print {
+      .no-print    { display:none !important; }
+      .page-break  { page-break-before:always; }
+      .cover       { page-break-after:always; }
+      body         { font-size:11px; }
+    }
+
+    /* ── Cover ── */
+    .cover {
+      background: linear-gradient(135deg,#1e3a5f 0%,#1e40af 100%);
+      color:#fff;
+      padding:100px 60px;
+      text-align:center;
+    }
+    .cover-box {
+      display:inline-block;
+      background:rgba(255,255,255,0.13);
+      border:2px solid rgba(255,255,255,0.3);
+      border-radius:16px;
+      padding:28px 60px;
+      margin-bottom:36px;
+    }
+    .cover-box h1  { font-size:42px; font-weight:900; letter-spacing:3px; }
+    .cover-box p   { font-size:13px; opacity:.75; letter-spacing:3px; text-transform:uppercase; margin-top:6px; }
+    .cover h2      { font-size:28px; font-weight:700; margin-bottom:14px; }
+    .cover .sub    { font-size:15px; opacity:.85; max-width:600px; margin:0 auto 40px auto; line-height:1.8; }
+    .meta-row      { display:inline-block; text-align:center; }
+    .meta-cell     { display:inline-block; background:rgba(255,255,255,0.11); border-radius:10px; padding:14px 26px; margin:0 8px; vertical-align:top; }
+    .meta-label    { font-size:10px; text-transform:uppercase; letter-spacing:2px; opacity:.65; margin-bottom:4px; }
+    .meta-val      { font-size:14px; font-weight:700; }
+    .cover-foot    { margin-top:50px; font-size:11px; opacity:.4; }
+    .cover p       { color:#fff; }
+
+    /* ── Content wrapper ── */
+    .wrap { max-width:900px; margin:0 auto; padding:50px 50px; }
+
+    /* ── TOC ── */
+    .toc { background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:30px 36px; margin-bottom:50px; }
+    .toc-title { font-size:16px; font-weight:700; color:#1e3a5f; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #dbeafe; }
+    .toc ol    { padding-left:22px; }
+    .toc li    { margin-bottom:7px; color:#2563eb; font-size:13px; }
+    .toc li span { color:#6b7280; font-size:11px; margin-left:8px; }
+
+    /* ── Section header ── */
+    .sec-head { display:table; width:100%; margin-bottom:22px; padding-bottom:14px; border-bottom:3px solid #dbeafe; }
+    .sec-num  { display:table-cell; width:42px; vertical-align:middle; }
+    .sec-num-inner { background:linear-gradient(135deg,#1e3a5f,#1e40af); color:#fff; width:36px; height:36px; border-radius:50%; text-align:center; line-height:36px; font-weight:800; font-size:15px; }
+    .sec-title { display:table-cell; vertical-align:middle; font-size:20px; font-weight:800; color:#1e3a5f; padding-left:12px; }
+    .section   { margin-bottom:50px; }
+
+    h3 { font-size:14px; font-weight:700; color:#1e40af; margin:22px 0 10px 0; }
+    h4 { font-size:13px; font-weight:700; color:#374151; margin:14px 0 6px 0; }
+    p  { margin-bottom:10px; color:#374151; }
+    ul, ol { padding-left:22px; margin-bottom:12px; }
+    li { margin-bottom:5px; color:#374151; }
+
+    /* ── Cards ── */
+    .card       { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:18px 22px; margin-bottom:14px; }
+    .card-title { font-weight:700; font-size:13px; color:#1e3a5f; margin-bottom:6px; }
+    .card p     { margin-bottom:0; font-size:12px; }
+
+    /* ── Info boxes ── */
+    .info-box    { background:#eff6ff; border-left:4px solid #2563eb; border-radius:0 8px 8px 0; padding:14px 18px; margin-bottom:16px; }
+    .success-box { background:#f0fdf4; border-left:4px solid #16a34a; border-radius:0 8px 8px 0; padding:14px 18px; margin-bottom:16px; }
+    .warning-box { background:#fffbeb; border-left:4px solid #d97706; border-radius:0 8px 8px 0; padding:14px 18px; margin-bottom:16px; }
+    .info-box p, .success-box p, .warning-box p { margin-bottom:0; font-size:12px; }
+
+    /* ── Tables ── */
+    table  { width:100%; border-collapse:collapse; margin-bottom:16px; font-size:12px; }
+    thead tr { background:linear-gradient(135deg,#1e3a5f,#1e40af); color:#fff; }
+    thead th { padding:10px 14px; text-align:left; font-weight:700; font-size:11px; letter-spacing:.5px; }
+    tbody tr:nth-child(even) { background:#f8fafc; }
+    tbody td { padding:9px 14px; border-bottom:1px solid #e5e7eb; color:#374151; }
+
+    code { background:#1e293b; color:#7dd3fc; padding:2px 8px; border-radius:4px; font-size:11px; font-family:'Courier New',monospace; }
+
+    .code-block {
+      background:#1e293b; color:#e2e8f0;
+      padding:16px 20px; border-radius:8px;
+      font-family:'Courier New',monospace;
+      font-size:11.5px; line-height:1.9;
+      margin-bottom:14px; white-space:pre;
+      overflow-x:auto;
+    }
+
+    /* ── Badges ── */
+    .badge        { display:inline-block; padding:2px 10px; border-radius:20px; font-size:10px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; }
+    .badge-green  { background:#d1fae5; color:#065f46; }
+    .badge-orange { background:#fef3c7; color:#92400e; }
+    .badge-red    { background:#fee2e2; color:#991b1b; }
+
+    /* ── Flow steps (table-based, no flexbox) ── */
+    .flow       { margin:14px 0; }
+    .flow-table { border-collapse:collapse; }
+    .flow-step  { background:#1e40af; color:#fff; padding:7px 14px; border-radius:6px; font-size:11px; font-weight:600; white-space:nowrap; }
+    .flow-arrow { padding:0 8px; color:#9ca3af; font-size:18px; font-weight:700; vertical-align:middle; }
+    .flow-step.green  { background:#16a34a; }
+    .flow-step.orange { background:#d97706; }
+    .flow-step.red    { background:#dc2626; }
+    .flow-step.navy   { background:#1e3a5f; }
+
+    /* ── Two-col (table based) ── */
+    .two-col { width:100%; border-collapse:separate; border-spacing:12px 0; margin-bottom:16px; }
+    .two-col td { width:50%; vertical-align:top; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px 18px; }
+    .two-col .col-title { font-weight:700; font-size:13px; color:#1e3a5f; margin-bottom:6px; }
+    .two-col p  { font-size:12px; margin-bottom:0; }
+
+    /* ── Divider & footer ── */
+    hr.div { border:none; border-top:1px solid #e5e7eb; margin:30px 0; }
+    .doc-foot { text-align:center; color:#9ca3af; font-size:11px; margin-top:20px; }
+
+    /* ── Print button ── */
+    .print-btn {
+      position:fixed; bottom:28px; right:28px;
+      background:linear-gradient(135deg,#1e3a5f,#1e40af);
+      color:#fff; border:none;
+      padding:14px 28px; border-radius:50px;
+      font-size:14px; font-weight:700; cursor:pointer;
+      box-shadow:0 4px 20px rgba(30,64,175,.45);
+      z-index:999;
+    }
+    .print-btn:hover { box-shadow:0 6px 28px rgba(30,64,175,.6); }
+  </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">⬇ Save as PDF</button>
+
+<!-- ═══════════════════ COVER ═══════════════════ -->
+<div class="cover">
+  <div class="cover-box">
+    <h1>Utah REIA</h1>
+    <p>Utah Real Estate Investors Association</p>
+  </div>
+  <h2>Property &amp; Notes Marketplace</h2>
+  <p class="sub">Complete technical documentation for the Utah REIA property listing platform — including the Notes Marketplace, subscriber notifications, email verification, listing expiration, and GHL integration.</p>
+  <div class="meta-row">
+    <div class="meta-cell"><div class="meta-label">Platform</div><div class="meta-val">Vercel + Airtable</div></div>
+    <div class="meta-cell"><div class="meta-label">Live URL</div><div class="meta-val">property-listing-32ax.vercel.app</div></div>
+    <div class="meta-cell"><div class="meta-label">Date</div><div class="meta-val">April 2026</div></div>
+    <div class="meta-cell"><div class="meta-label">Version</div><div class="meta-val">2.0</div></div>
+  </div>
+  <p class="cover-foot">Confidential — Utah REIA Internal Documentation</p>
+</div>
+
+<!-- ═══════════════════ CONTENT ═══════════════════ -->
+<div class="wrap">
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">📋 Table of Contents</div>
+    <ol>
+      <li>Platform Overview <span>— what it is and how it works</span></li>
+      <li>Property Listings <span>— listing, viewing, and managing properties</span></li>
+      <li>Notes Marketplace <span>— the new mortgage note trading feature</span></li>
+      <li>API Endpoints <span>— all serverless functions</span></li>
+      <li>Email Verification &amp; Security <span>— how ownership is verified</span></li>
+      <li>Subscriber Notifications <span>— email alerts for new listings</span></li>
+      <li>Listing Expiration System <span>— auto-delete after 90 days</span></li>
+      <li>GHL Integration <span>— connecting GoHighLevel forms to Airtable</span></li>
+      <li>Environment Variables <span>— all required keys</span></li>
+      <li>Disclosures &amp; Legal Notices <span>— compliance components</span></li>
+    </ol>
+  </div>
+
+  <!-- ── 1. Overview ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">1</div></div>
+      <div class="sec-title">Platform Overview</div>
+    </div>
+
+    <p>The Utah REIA Marketplace is a web-based platform embedded inside the GoHighLevel (GHL) website. It allows members and guests to browse, list, and inquire about two types of real estate assets:</p>
+
+    <table class="two-col">
+      <tr>
+        <td><div class="col-title">🏠 Property Listings</div><p>Physical real estate properties for sale. Members list their properties; buyers browse and contact sellers directly.</p></td>
+        <td><div class="col-title">📋 Notes Marketplace</div><p>Mortgage notes (performing and non-performing) available for sale or trade. Note sellers list their paper; buyers inquire and negotiate.</p></td>
+      </tr>
+    </table>
+
+    <h3>Technology Stack</h3>
+    <table>
+      <thead><tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Frontend</td><td>HTML / CSS / JavaScript</td><td>The page users see, embedded in GHL</td></tr>
+        <tr><td>Backend (API)</td><td>Vercel Serverless Functions (Node.js)</td><td>Handles all data operations</td></tr>
+        <tr><td>Database</td><td>Airtable</td><td>Stores properties, notes, and subscribers</td></tr>
+        <tr><td>Image Storage</td><td>Cloudinary</td><td>Hosts listing photos</td></tr>
+        <tr><td>Email</td><td>Gmail SMTP via Nodemailer</td><td>Sends notifications and verification codes</td></tr>
+        <tr><td>CRM / Forms</td><td>GoHighLevel (GHL)</td><td>Lead capture and form submissions</td></tr>
+      </tbody>
+    </table>
+
+    <h3>How It All Connects</h3>
+    <div class="flow">
+      <table class="flow-table"><tr>
+        <td><span class="flow-step navy">GHL Website</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step">Vercel API</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step green">Airtable Database</span></td>
+      </tr></table>
+    </div>
+    <div class="flow">
+      <table class="flow-table"><tr>
+        <td><span class="flow-step navy">User Uploads Image</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step">Vercel API</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step orange">Cloudinary</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step green">URL saved in Airtable</span></td>
+      </tr></table>
+    </div>
+    <div class="flow">
+      <table class="flow-table"><tr>
+        <td><span class="flow-step navy">GHL Form Submitted</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step">GHL Webhook</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step">Vercel API</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step green">Airtable Subscribers</span></td>
+      </tr></table>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ── 2. Properties ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">2</div></div>
+      <div class="sec-title">Property Listings</div>
+    </div>
+
+    <p>The property listings tab allows sellers to post properties and buyers to browse, filter, and contact sellers.</p>
+
+    <h3>What a Seller Can Do</h3>
+    <ul>
+      <li>Click <strong>"List Your Property"</strong> to open the listing form</li>
+      <li>Fill in property details: title, price, address, type, beds/baths, description</li>
+      <li>Upload up to 3 photos — images go to Cloudinary, URLs stored in Airtable</li>
+      <li>Submit — the property appears on the marketplace immediately</li>
+    </ul>
+
+    <h3>What a Buyer Can Do</h3>
+    <ul>
+      <li>Browse the property grid with filtering by type, price, beds, baths, and status</li>
+      <li>Click any property card to open the full detail modal</li>
+      <li>Must accept the <strong>Utah REIA Disclaimer &amp; Terms</strong> before contacting a seller</li>
+      <li>Fill out and send an inquiry — seller receives an email, buyer gets a confirmation</li>
+    </ul>
+
+    <h3>Managing a Property (Seller Only)</h3>
+    <div class="info-box">
+      <p>Only the person who listed the property (verified by email) can update or delete it. This prevents anyone else from modifying listings they don't own.</p>
+    </div>
+    <div class="flow">
+      <table class="flow-table"><tr>
+        <td><span class="flow-step navy">Click Update or Delete</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step orange">Enter listing email</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step">6-digit code emailed</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step green">Verified → Action allowed</span></td>
+      </tr></table>
+    </div>
+
+    <h3>Property Status Options</h3>
+    <table>
+      <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-green">Available</span></td><td>Property is actively for sale</td></tr>
+        <tr><td><span class="badge badge-orange">Pending</span></td><td>Under contract or in negotiation</td></tr>
+        <tr><td><span class="badge badge-red">Sold</span></td><td>Transaction completed</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Airtable Table: Properties</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Title</td><td>Text</td><td>Property name or listing title</td></tr>
+        <tr><td>Price</td><td>Number</td><td>Asking price in USD</td></tr>
+        <tr><td>Address / Location</td><td>Text</td><td>Full property address</td></tr>
+        <tr><td>Property Type</td><td>Select</td><td>SFR, Multi-Family, Commercial, Land, etc.</td></tr>
+        <tr><td>Bedrooms / Bathrooms</td><td>Number</td><td>—</td></tr>
+        <tr><td>Square Feet</td><td>Number</td><td>—</td></tr>
+        <tr><td>Description</td><td>Long Text</td><td>—</td></tr>
+        <tr><td>Image</td><td>Attachment</td><td>Up to 3 photos stored via Cloudinary URL</td></tr>
+        <tr><td>Status</td><td>Select</td><td>Available / Pending / Sold</td></tr>
+        <tr><td>Contact's Name / Email / Phone</td><td>Text</td><td>Seller contact info</td></tr>
+        <tr><td>Date Listed</td><td>Date</td><td>Auto-set on creation</td></tr>
+        <tr><td>Expiration Warning Sent</td><td>Checkbox</td><td>Tracks if the 14-day warning email was sent</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ── 3. Notes ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">3</div></div>
+      <div class="sec-title">Notes Marketplace</div>
+    </div>
+
+    <p>The Notes Marketplace is a dedicated tab alongside Properties. It allows investors to buy and sell mortgage notes — legal documents representing a loan secured by real estate.</p>
+
+    <h3>What is a Mortgage Note?</h3>
+    <p>A mortgage note is a financial instrument — essentially the IOU on a property loan. Note investors buy these at a discount to earn yield.</p>
+
+    <table class="two-col">
+      <tr>
+        <td><div class="col-title">Performing Notes</div><p>Borrower is making payments on time. Lower risk, lower discount, steadier yield.</p></td>
+        <td><div class="col-title">Non-Performing Notes</div><p>Borrower has defaulted. Higher risk but larger purchase discount and higher potential return.</p></td>
+      </tr>
+    </table>
+
+    <h3>Note Listing Fields</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Title</td><td>Text</td><td>Descriptive name for the note</td></tr>
+        <tr><td>Asking Price</td><td>Currency</td><td>What the seller wants for the note</td></tr>
+        <tr><td>Current Balance (UPB)</td><td>Currency</td><td>Unpaid Principal Balance remaining on the loan</td></tr>
+        <tr><td>Original Balance</td><td>Currency</td><td>Original loan amount at origination</td></tr>
+        <tr><td>Interest Rate</td><td>Percent</td><td>Note interest rate</td></tr>
+        <tr><td>Monthly Payment</td><td>Currency</td><td>Borrower's scheduled monthly payment</td></tr>
+        <tr><td>LTV</td><td>Percent</td><td>Loan-to-Value ratio</td></tr>
+        <tr><td>ITB</td><td>Percent</td><td>Investment-to-Basis — buyer's investment vs. seller's basis</td></tr>
+        <tr><td>ITV</td><td>Percent</td><td>Investment-to-Value — buyer's investment ÷ current property value</td></tr>
+        <tr><td>Note Position</td><td>Select</td><td>1st, 2nd, etc.</td></tr>
+        <tr><td>Note Type</td><td>Select</td><td>Type of mortgage note</td></tr>
+        <tr><td>Performance Status</td><td>Select</td><td>Performing / Non-Performing / Sub-Performing / Re-Performing</td></tr>
+        <tr><td>Term / Balloon</td><td>Number</td><td>Loan term and balloon period (months)</td></tr>
+        <tr><td>Substitution of Collateral</td><td>Checkbox</td><td>Whether collateral can be substituted</td></tr>
+        <tr><td>Property Type / Address / State</td><td>Text</td><td>Collateral property information</td></tr>
+        <tr><td>Origination Date</td><td>Date</td><td>When the original loan was made</td></tr>
+        <tr><td>Description</td><td>Long Text</td><td>Additional details about the note</td></tr>
+        <tr><td>Images</td><td>Attachment</td><td>Property photos via Cloudinary</td></tr>
+        <tr><td>Status</td><td>Select</td><td>Available / Under Contract / Sold</td></tr>
+        <tr><td>Contact's Name / Email / Phone</td><td>Text</td><td>Seller contact info</td></tr>
+        <tr><td>Date Listed</td><td>Date</td><td>Auto-set on creation</td></tr>
+        <tr><td>Expiration Warning Sent</td><td>Checkbox</td><td>Tracks if 14-day warning email was sent</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Note Status Options</h3>
+    <table>
+      <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-green">Available</span></td><td>Note is actively for sale</td></tr>
+        <tr><td><span class="badge badge-orange">Under Contract</span></td><td>In due diligence or negotiation</td></tr>
+        <tr><td><span class="badge badge-red">Sold</span></td><td>Note has been sold</td></tr>
+      </tbody>
+    </table>
+
+    <div class="success-box">
+      <p><strong>Important:</strong> The Notes Marketplace uses a completely separate Airtable base from the Properties base — different API keys, different base IDs — but shares the same verification, notification, and expiration infrastructure.</p>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ── 4. API Endpoints ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">4</div></div>
+      <div class="sec-title">API Endpoints</div>
+    </div>
+
+    <p>All backend logic runs as Vercel Serverless Functions. Each endpoint handles a specific operation and is accessible at <code>https://property-listing-32ax.vercel.app/api/...</code></p>
+
+    <h3>Properties</h3>
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/get-properties</code></td><td>GET</td><td>Fetches all property listings from Airtable</td></tr>
+        <tr><td><code>/api/add-property</code></td><td>POST</td><td>Creates a new property listing</td></tr>
+        <tr><td><code>/api/update-property-status</code></td><td>POST</td><td>Updates status for a property OR note (pass <code>type:"note"</code> for notes)</td></tr>
+        <tr><td><code>/api/delete-property</code></td><td>POST</td><td>Deletes a property OR note (pass <code>type:"note"</code> for notes)</td></tr>
+        <tr><td><code>/api/contact-property</code></td><td>POST</td><td>Sends inquiry email to property seller + confirmation to buyer</td></tr>
+        <tr><td><code>/api/upload-image</code></td><td>POST</td><td>Uploads image to Cloudinary, returns the secure URL</td></tr>
+        <tr><td><code>/api/check-property-expiration</code></td><td>POST</td><td>Checks and expires old properties AND notes (runs as daily cron at 9 AM UTC)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Notes</h3>
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/get-notes</code></td><td>GET</td><td>Fetches all note listings from Airtable</td></tr>
+        <tr><td><code>/api/add-note</code></td><td>POST</td><td>Creates a new note listing (also fires subscriber notification)</td></tr>
+        <tr><td><code>/api/contact-note</code></td><td>POST</td><td>Sends inquiry email to note seller + confirmation to buyer</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Verification</h3>
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/send-verification-code</code></td><td>POST</td><td>Sends a 6-digit code to the seller's email (expires in 10 mins)</td></tr>
+        <tr><td><code>/api/verify-code</code></td><td>POST</td><td>Validates the 6-digit code entered by the user</td></tr>
+        <tr><td><code>/api/get-property-contact-email</code></td><td>GET</td><td>Fetches the contact email stored for a property to verify ownership</td></tr>
+        <tr><td><code>/api/get-note-contact-email</code></td><td>GET</td><td>Fetches the contact email stored for a note to verify ownership</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Subscribers &amp; Notifications</h3>
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>/api/subscribe</code></td><td>POST</td><td>Adds a new subscriber (email, name, phone) to Airtable</td></tr>
+        <tr><td><code>/api/notify-subscribers</code></td><td>POST</td><td>Sends instant email alert for a new property listing</td></tr>
+        <tr><td><code>/api/notify-note</code></td><td>POST</td><td>Sends instant email alert for a new note listing</td></tr>
+        <tr><td><code>/api/daily-digest</code></td><td>POST</td><td>Sends a combined daily digest of all new properties + notes (cron at 4 PM UTC)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <p><strong>Shared endpoints for Properties &amp; Notes:</strong> The <code>update-property-status</code> and <code>delete-property</code> endpoints serve both types. For notes, pass <code>"type": "note"</code> in the request body — the endpoint automatically switches to the Notes Airtable credentials. This saves serverless function slots on Vercel.</p>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ── 5. Verification ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">5</div></div>
+      <div class="sec-title">Email Verification &amp; Security</div>
+    </div>
+
+    <p>To prevent anyone from updating or deleting a listing they don't own, a secure email verification flow is required before any management action is permitted.</p>
+
+    <h3>Verification Flow</h3>
+    <div class="flow">
+      <table class="flow-table"><tr>
+        <td><span class="flow-step navy">1. Click Update or Delete</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step">2. Enter your email</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step orange">3. Email checked vs. Airtable</span></td>
+      </tr></table>
+    </div>
+    <div class="flow" style="margin-top:8px;">
+      <table class="flow-table"><tr>
+        <td><span class="flow-step">4. 6-digit code emailed</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step">5. User enters code</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step green">6. Verified — action proceeds</span></td>
+      </tr></table>
+    </div>
+
+    <h3>Security Details</h3>
+    <ul>
+      <li>Verification code expires in <strong>10 minutes</strong></li>
+      <li>A <strong>60-second cooldown</strong> prevents resend spam</li>
+      <li>The code is embedded in a signed <strong>HMAC token</strong> — cannot be forged</li>
+      <li>The email entered must exactly match the contact email stored in Airtable for that listing</li>
+      <li>Works for both Properties and Notes — separate modals, same backend</li>
+    </ul>
+
+    <div class="warning-box">
+      <p><strong>Required:</strong> The <code>VERIFICATION_SECRET</code> environment variable must be set in Vercel. This is used to sign and validate the HMAC tokens. Use any long random string as the value.</p>
+    </div>
+  </div>
+
+  <!-- ── 6. Subscribers ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">6</div></div>
+      <div class="sec-title">Subscriber Notifications</div>
+    </div>
+
+    <p>Subscribers are people who have opted in to receive email alerts when new listings are added to the marketplace.</p>
+
+    <h3>Three Types of Notification Emails</h3>
+    <div class="card">
+      <div class="card-title">1. Instant Property Alert</div>
+      <p>Fires immediately when a new property is listed. Sends a branded email with the property card (image, title, price, specs) to all subscribers via BCC.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">2. Instant Note Alert</div>
+      <p>Fires immediately when a new note is listed. Sends a navy-branded email with the note details (asking price, UPB, performance status, rate, LTV) to all subscribers.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">3. Daily Digest (Automatic — 4 PM UTC)</div>
+      <p>Runs every day via Vercel cron. Fetches all properties AND notes added in the last 24 hours. Sends one combined email with separate sections for each type. Skips sending if nothing new was listed that day.</p>
+    </div>
+
+    <h3>Airtable Table: Subscribers</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Email</td><td>Email</td><td>Required — subscriber's email address</td></tr>
+        <tr><td>Name</td><td>Text</td><td>Full name — captured from the GHL form</td></tr>
+        <tr><td>Phone</td><td>Phone</td><td>Phone number — captured from the GHL form</td></tr>
+        <tr><td>Subscribed</td><td>Checkbox</td><td>Must be checked (true) to receive digest emails</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ── 7. Expiration ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">7</div></div>
+      <div class="sec-title">Listing Expiration System</div>
+    </div>
+
+    <p>All listings — both properties and notes — automatically expire after <strong>90 days</strong>. This keeps the marketplace current and prevents stale listings from misleading buyers.</p>
+
+    <h3>Expiration Timeline</h3>
+    <table>
+      <thead><tr><th>Days Since Listed</th><th>What Happens</th></tr></thead>
+      <tbody>
+        <tr><td>Day 1 – 75</td><td>No action taken</td></tr>
+        <tr><td>Day 76 (14 days before expiry)</td><td>Warning email sent to the lister. The <code>Expiration Warning Sent</code> checkbox is set to true in Airtable so the warning only fires once.</td></tr>
+        <tr><td>Day 90+</td><td>Listing is automatically deleted from Airtable. A deletion notification email is sent to the lister.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>How It Runs</h3>
+    <div class="flow">
+      <table class="flow-table"><tr>
+        <td><span class="flow-step navy">Daily Cron — 9:00 AM UTC</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step">Fetches all Properties + Notes</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step orange">Checks age of each listing</span></td>
+        <td class="flow-arrow">→</td>
+        <td><span class="flow-step red">Deletes expired / Warns near-expiry</span></td>
+      </tr></table>
+    </div>
+
+    <p style="margin-top:12px;">Both property and note checks run concurrently in the same serverless function, saving on Vercel's function usage limits.</p>
+
+    <div class="info-box">
+      <p><strong>Airtable requirement:</strong> Both the <strong>Properties</strong> table and the <strong>Notes</strong> table must have a field named exactly <code>Expiration Warning Sent</code> of type <strong>Checkbox</strong>. Without this field, the warning email will fire every day instead of just once.</p>
+    </div>
+  </div>
+
+  <!-- ── 8. GHL ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">8</div></div>
+      <div class="sec-title">GHL Integration</div>
+    </div>
+
+    <p>GoHighLevel (GHL) is connected to this system in two ways.</p>
+
+    <h3>1. The Marketplace Page (Embed)</h3>
+    <p>The entire property and notes marketplace is an HTML page embedded inside GHL as a custom page. Users navigate to it through the Utah REIA website and interact with it directly in the browser.</p>
+
+    <h3>2. Subscriber Capture via Form Webhook</h3>
+    <p>When a guest fills out the <strong>"Property Listing"</strong> form on the GHL site, a GHL workflow fires a webhook that automatically saves them as a subscriber in Airtable.</p>
+
+    <h4>GHL Workflow Configuration</h4>
+    <table>
+      <thead><tr><th>Step</th><th>Setting</th></tr></thead>
+      <tbody>
+        <tr><td>Trigger</td><td>Form Submitted — Form is "Property Listing"</td></tr>
+        <tr><td>Action</td><td>Send Webhook (Custom Webhook)</td></tr>
+        <tr><td>Method</td><td>POST</td></tr>
+        <tr><td>URL</td><td><code>https://property-listing-32ax.vercel.app/api/subscribe</code></td></tr>
+        <tr><td>Header</td><td><code>Content-Type: application/json</code></td></tr>
+      </tbody>
+    </table>
+
+    <h4>Webhook Body</h4>
+    <div class="code-block">{
+  "email": "{{contact.email}}",
+  "name":  "{{contact.full_name}}",
+  "phone": "{{contact.phone}}"
+}</div>
+
+    <div class="success-box">
+      <p>The subscribe endpoint automatically handles duplicates — if the same email submits the form twice, it won't create a duplicate record in Airtable.</p>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ── 9. Env Vars ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">9</div></div>
+      <div class="sec-title">Environment Variables</div>
+    </div>
+
+    <p>All sensitive credentials are stored as environment variables in Vercel — never hardcoded in source code. Set these under <strong>Vercel → Project → Settings → Environment Variables</strong>.</p>
+
+    <h3>Properties (Airtable)</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>AIRTABLE_API_KEY</code></td><td>Airtable personal access token for the Properties base</td></tr>
+        <tr><td><code>AIRTABLE_BASE_ID</code></td><td>Base ID of the Properties Airtable base</td></tr>
+        <tr><td><code>AIRTABLE_TABLE_NAME</code></td><td>Table name — defaults to <code>Properties</code> if not set</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Notes (Airtable)</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>AIRTABLE_NOTE_API_KEY</code></td><td>Airtable personal access token for the Notes base</td></tr>
+        <tr><td><code>AIRTABLE_NOTE_BASE_ID</code></td><td>Base ID of the Notes Airtable base</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Subscribers (Airtable)</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>AIRTABLE_API_KEY_SUB</code></td><td>Airtable personal access token for the Subscribers base</td></tr>
+        <tr><td><code>AIRTABLE_BASE_ID_SUB</code></td><td>Base ID of the Subscribers Airtable base</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Email (Gmail SMTP)</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>GMAIL_USER</code></td><td>Gmail address used to send all outgoing emails</td></tr>
+        <tr><td><code>GMAIL_APP_PASSWORD</code></td><td>Google App Password — generated in Google Account → Security → App Passwords. <strong>Not</strong> the regular Gmail login password.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Image Uploads (Cloudinary)</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>CLOUDINARY_CLOUD_NAME</code></td><td>Your Cloudinary cloud name</td></tr>
+        <tr><td><code>CLOUDINARY_API_KEY</code></td><td>Cloudinary API key</td></tr>
+        <tr><td><code>CLOUDINARY_API_SECRET</code></td><td>Cloudinary API secret</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Security</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>VERIFICATION_SECRET</code></td><td>Secret key used to sign HMAC verification tokens. Use any long random string.</td></tr>
+        <tr><td><code>CRON_SECRET</code></td><td>Vercel sends this as a Bearer token when running cron jobs. Protects the expiration and daily digest endpoints from unauthorized calls.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 10. Disclosures ── -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-num"><div class="sec-num-inner">10</div></div>
+      <div class="sec-title">Disclosures &amp; Legal Notices</div>
+    </div>
+
+    <p>The platform includes four compliance components that appear at key interaction points to protect Utah REIA legally.</p>
+
+    <div class="card">
+      <div class="card-title">1. Acceptance Modal (Registration Gate)</div>
+      <p>Before a buyer can contact any seller (property or note), they must check two boxes confirming: (a) they agree to the Utah REIA Disclaimer &amp; Terms of Use, and (b) they consent to receive communications. The "Accept &amp; Continue" button remains disabled until both boxes are checked.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2. Wire Fraud Warning Banner</div>
+      <p>Displayed inside every contact and inquiry modal. Warns buyers never to wire funds based solely on emailed instructions and to always verify bank details by phone directly with a known contact before any transfer.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">3. Compact Inline Listing Notice</div>
+      <p>Shown at the top of every property and note detail modal. Reminds viewers that Utah REIA does not verify listings, is not a broker, lender, or advisor, and that all due diligence is the buyer's responsibility.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">4. Listing Page Footer Notice</div>
+      <p>A persistent notice bar at the bottom of the marketplace page stating that Utah REIA is a marketplace only and is not a party to any transaction. Includes a link to the full legal disclaimer page.</p>
+    </div>
+
+    <div class="warning-box">
+      <p><strong>Full Disclaimer URL:</strong> <code>https://utahreia.org/property-listing-legal-disclaimer</code> — this page must remain live and accessible at all times as it is referenced in every disclosure component across the platform.</p>
+    </div>
+  </div>
+
+  <hr class="div">
+  <p class="doc-foot">
+    Utah REIA Property &amp; Notes Marketplace — Internal Technical Documentation — April 2026<br>
+    Prepared by the Utah REIA Development Team
+  </p>
+
+</div>
+</body>
+</html>
