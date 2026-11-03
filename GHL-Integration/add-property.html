@@ -8,6 +8,23 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBv5v5ZA_pJvv_jT_ERUuXAQbG0xBqOWRY&libraries=places"></script>
 </head>
 <body>
+<script>
+  // Capture campaign attribution (utm_*, gclid/fbclid, referrer) from the landing
+  // URL on first load and persist it for the session (first-touch wins), so the
+  // add-property submit can forward it for the dashboard funnel.
+  (function captureUtms(){
+    try {
+      var KEY = 'ureia_utms';
+      if (sessionStorage.getItem(KEY)) return;
+      var qp = new URLSearchParams(location.search);
+      var fields = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+      var out = {};
+      fields.forEach(function(k){ var v = qp.get(k); if (v) out[k] = v; });
+      if (document.referrer) out.referrer = document.referrer;
+      if (Object.keys(out).length) sessionStorage.setItem(KEY, JSON.stringify(out));
+    } catch(e){}
+  })();
+</script>
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -557,6 +574,16 @@
         Image:                            uploadedImages,
         recaptchaToken:                   recaptchaToken,
       };
+
+      // Campaign attribution captured from the landing URL (see docs/utm-audit.md).
+      // NOTE: add-property.js silently drops fields outside its whitelist, so these
+      // are harmless no-ops until the matching columns ("UTM Source" … "UTM Term")
+      // are added to the Airtable Properties table AND whitelisted server-side.
+      try {
+        var _utms = JSON.parse(sessionStorage.getItem('ureia_utms') || '{}');
+        var _utmMap = { utm_source:'UTM Source', utm_medium:'UTM Medium', utm_campaign:'UTM Campaign', utm_content:'UTM Content', utm_term:'UTM Term' };
+        Object.keys(_utmMap).forEach(function(k){ if (_utms[k]) propertyData[_utmMap[k]] = _utms[k]; });
+      } catch(e){}
 
       const bedrooms  = document.getElementById('bedrooms').value;
       const bathrooms = document.getElementById('bathrooms').value;
