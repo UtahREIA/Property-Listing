@@ -27,6 +27,14 @@ const ALLOWED_FIELDS = new Set([
   'Amenities',
   'Contacted',
   'Expiration Warning Sent',
+  // Campaign attribution — first-touch UTMs forwarded from the add-property page.
+  // Columns must exist in the Airtable Properties table before enabling these,
+  // or Airtable 422s the whole write.
+  'UTM Source',
+  'UTM Medium',
+  'UTM Campaign',
+  'UTM Content',
+  'UTM Term',
 ]);
 
 module.exports = async (req, res) => {
